@@ -7,8 +7,10 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
   <SidebarProvider>
     <AppSidebar />
     <SidebarInset>
-      <header class="flex items-center gap-2 bg-background p-4">
-        <SidebarTrigger class="-ml-1" />
+      <header class="flex h-16 shrink-0 items-center gap-2">
+        <div class="flex items-center gap-2 px-4">
+          <SidebarTrigger />
+        </div>
       </header>
       <div className="flex-1 p-4 pt-2 flex flex-col min-h-0">
         <RouterView />

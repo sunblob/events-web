@@ -1,82 +1,43 @@
 <script setup lang="ts">
+import { GalleryVerticalEndIcon } from 'lucide-vue-next';
+
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-  SidebarMenuItem,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarMenuAction,
 } from '@/components/ui/sidebar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
-import { ChevronRightIcon, UserIcon } from 'lucide-vue-next';
-
-const menuItems = [
-  {
-    title: 'Users',
-    link: '/users',
-    items: [
-      {
-        title: 'Admins',
-        link: '/users/admins',
-      },
-      {
-        title: 'Editors',
-        link: '/users/editors',
-      },
-    ],
-  },
-  {
-    title: 'Conferences',
-    link: '/conferences',
-  },
-];
+import NavMain from './NavMain.vue';
+import ToggleThemeButton from './ToggleThemeButton.vue';
 </script>
 
 <template>
-  <Sidebar>
-    <SidebarHeader> Sidebar </SidebarHeader>
+  <Sidebar variant="inset" collapsible="icon">
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuButton size="lg" as-child>
+          <div>
+            <div
+              class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
+            >
+              <GalleryVerticalEndIcon class="size-4" />
+            </div>
+            <div class="flex flex-col gap-1 leading-none">
+              <span class="font-semibold">CRM</span>
+              <span class="">v1.0.0</span>
+            </div>
+            <ToggleThemeButton class="ml-auto p-0" />
+          </div>
+        </SidebarMenuButton>
+      </SidebarMenu>
+    </SidebarHeader>
     <SidebarContent>
-      <SidebarGroup>
-        <SidebarMenu>
-          <Collapsible v-for="item in menuItems" :key="item.title" as-child>
-            <SidebarMenuItem>
-              <SidebarMenuButton as-child>
-                <RouterLink :to="item.link">
-                  <UserIcon />
-                  {{ item.title }}
-                </RouterLink>
-              </SidebarMenuButton>
-              <template v-if="item.items && item.items.length > 0">
-                <CollapsibleTrigger as-child>
-                  <SidebarMenuAction className="data-[state=open]:rotate-90">
-                    <ChevronRightIcon />
-                    <span className="sr-only">Toggle</span>
-                  </SidebarMenuAction>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
-                      <SidebarMenuSubButton as-child>
-                        <RouterLink :to="subItem.link">
-                          {{ subItem.title }}
-                        </RouterLink>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </template>
-            </SidebarMenuItem>
-          </Collapsible>
-        </SidebarMenu>
-      </SidebarGroup>
+      <NavMain />
       <SidebarGroup />
     </SidebarContent>
-    <SidebarFooter />
+    <SidebarFooter> Footer </SidebarFooter>
   </Sidebar>
 </template>
