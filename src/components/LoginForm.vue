@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { storeToRefs } from 'pinia';
 import { LoaderCircleIcon } from 'lucide-vue-next';
+import { toast } from 'vue-sonner';
 
 const router = useRouter();
 const store = useAuthStore();
@@ -35,8 +36,15 @@ const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 const onSubmit = handleSubmit(async (values) => {
-  await store.login(values);
-  router.push('/dashboard');
+  try {
+    await store.login(values);
+    router.push('/dashboard');
+    toast.success('Login successful');
+  } catch (error) {
+    toast.error('Invalid email or password');
+  } finally {
+    store.loading = false;
+  }
 });
 </script>
 

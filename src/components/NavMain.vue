@@ -17,6 +17,8 @@ import {
   UserRoundCogIcon,
   UserRoundPenIcon,
 } from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth';
+import { storeToRefs } from 'pinia';
 
 const menuItems = [
   {
@@ -36,14 +38,22 @@ const menuItems = [
         icon: UserRoundPenIcon,
       },
     ],
+    role: ['admin'],
   },
   {
     title: 'Conferences',
     link: '/conferences',
     icon: CalendarIcon,
     defaultOpen: false,
+    role: ['admin', 'editor'],
   },
 ];
+
+const store = useAuthStore();
+
+const { user } = storeToRefs(store);
+
+console.log(user.value);
 </script>
 
 <template>

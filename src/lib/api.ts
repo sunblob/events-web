@@ -26,6 +26,7 @@ export class Api {
     });
   }
 
+
   static async getConferences() {
     try {
       const response = await ofetch<ConferenceResponse>(`${API_URL}/conferences`, {
