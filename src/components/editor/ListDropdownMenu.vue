@@ -11,8 +11,6 @@ import { Toggle } from '@/components/ui/toggle';
 import { ListIcon, ChevronDownIcon, ListOrderedIcon, ListTodoIcon } from 'lucide-vue-next';
 import { computed, type Component } from 'vue';
 
-type ListType = 'bulletList' | 'orderedList' | 'taskList';
-
 type ListOption = {
   icon: Component;
   label: string;
@@ -20,7 +18,7 @@ type ListOption = {
 };
 
 type ListProps = {
-  listTypes: ListType[];
+  types: ['bulletList', 'orderedList', 'taskList'];
 };
 
 const listOptions: ListOption[] = [

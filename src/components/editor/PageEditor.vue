@@ -47,7 +47,7 @@ const getJSON = () => {
       </div>
 
       <div>
-        <ListDropdownMenu />
+        <ListDropdownMenu :types="['bulletList', 'orderedList', 'taskList']" />
       </div>
     </div>
     <EditorContent :editor="editor" role="presentation" />

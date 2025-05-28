@@ -9,10 +9,15 @@ import Underline from '@tiptap/extension-underline';
 export const useEditorStore = defineStore('editor', () => {
   const editor = useEditor({
     extensions: [StarterKit, TextAlign, Typography, Underline],
-    content: '<p>Hello World</p>',
+    content: '',
   });
+
+  function setContent(content: string) {
+    editor.value?.commands.setContent(content);
+  }
 
   return {
     editor,
+    setContent,
   };
 });

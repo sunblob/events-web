@@ -10,9 +10,13 @@ import ToggleThemeButton from '@/components/ToggleThemeButton.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { storeToRefs } from 'pinia';
+import { LoaderCircleIcon } from 'lucide-vue-next';
 
 const router = useRouter();
-const { login } = useAuthStore();
+const store = useAuthStore();
+
+const { loading } = storeToRefs(store);
 
 const formSchema = toTypedSchema(
   z.object({
@@ -31,13 +35,13 @@ const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 const onSubmit = handleSubmit(async (values) => {
-  await login(values);
+  await store.login(values);
   router.push('/dashboard');
 });
 </script>
 
 <template>
-  <div class="relative min-w-[360px] rounded-lg border py-6 px-4">
+  <div class="relative min-w-[460px] rounded-lg border py-6 px-4">
     <ToggleThemeButton class="absolute top-6 right-4" />
 
     <form @submit="onSubmit" class="flex flex-col gap-4">
@@ -81,7 +85,10 @@ const onSubmit = handleSubmit(async (values) => {
         </div>
         <div v-if="errors.password" class="mt-2 text-red-700 text-xs">{{ errors.password }}</div>
       </div>
-      <Button type="submit">Login</Button>
+      <Button type="submit" :disabled="loading">
+        <LoaderCircleIcon v-if="loading" class="w-4 h-4 animate-spin" />
+        <span v-else>Login</span>
+      </Button>
     </form>
   </div>
 </template>
