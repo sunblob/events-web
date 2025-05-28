@@ -1,0 +1,1 @@
+export const API_URL = 'http://localhost/events-api/public/api';
