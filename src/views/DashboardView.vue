@@ -1,6 +1,15 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+
+onMounted(async () => {
+  await authStore.getMe();
+});
 </script>
 
 <template>

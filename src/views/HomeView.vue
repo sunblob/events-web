@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+import HomeHeader from '@/components/HomeHeader.vue';
 import PageEditor from '@/components/editor/PageEditor.vue';
 </script>
 
 <template>
-  <div>
-    <h1>Home</h1>
+  <HomeHeader />
+  <main class="container mx-auto py-6 px-4 md:px-0">
     <PageEditor />
-  </div>
+  </main>
 </template>

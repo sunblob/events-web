@@ -24,5 +24,16 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
   };
 
-  return { user, isAutheticated, login, logout, loading };
+  const getMe = async () => {
+    try {
+      const response = await Api.getMe();
+      user.value = response;
+
+      console.log(user.value);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return { user, isAutheticated, login, logout, loading, getMe };
 });

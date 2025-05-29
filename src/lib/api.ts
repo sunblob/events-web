@@ -1,17 +1,16 @@
 import { ofetch } from 'ofetch';
 import { API_URL } from './constants';
-import type { ConferenceResponse, LoginResponse } from './types';
+import type { ConferenceResponse, LoginResponse, User } from './types';
 
 export class Api {
-
   static async login({ email, password }: { email: string; password: string }) {
     try {
-      const response = await ofetch<LoginResponse>(`${API_URL}/login`, {
+      const response = await ofetch<LoginResponse>(`${API_URL}/auth/login`, {
         method: 'POST',
         responseType: 'json',
         body: { email, password },
       });
-  
+
       return response;
     } catch (error) {
       console.log('error', error);
@@ -26,6 +25,16 @@ export class Api {
     });
   }
 
+  static async getMe() {
+    const response = await ofetch<User>(`${API_URL}/auth/me`, {
+      method: 'GET',
+      responseType: 'json',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+    return response;
+  }
 
   static async getConferences() {
     try {
