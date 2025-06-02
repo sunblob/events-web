@@ -50,6 +50,20 @@ export type BaseResponse<T> = {
     count: number;
 }
 
+export type FileResponse = {
+    message: string;
+    file: {
+        id: number;
+        original_name: string;
+        path: string;
+        url: string;
+        size: number;
+        mime_type: string;
+        page_id: number;
+    }
+}
+
 export type ConferenceResponse = BaseResponse<ConferenceYear>
 export type ConferencePageResponse = BaseResponse<ConferencePage>
 export type PageFileResponse = BaseResponse<PageFile>
+

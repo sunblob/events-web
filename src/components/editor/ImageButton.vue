@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { storeToRefs } from 'pinia';
 
 import { ImagePlusIcon } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Api } from '@/lib/api';
-import type { PageFile } from '@/lib/types';
+import type { FileResponse } from '@/lib/types';
+import { useEditorStore } from '@/stores/editor';
+import { FILE_URL } from '@/lib/constants';
+
+const store = useEditorStore();
+const { editor } = storeToRefs(store);
 
 const isOpen = ref(false);
 const file = ref<File | null>(null);
@@ -33,8 +39,6 @@ const handleFileChange = (e: Event) => {
   if (newFile) {
     file.value = newFile;
   }
-
-  console.log('file', file.value);
 };
 
 const handleUpload = async () => {
@@ -44,8 +48,11 @@ const handleUpload = async () => {
 
   toast.promise(promise, {
     loading: 'Uploading image...',
-    success: (data: PageFile) => {
-      console.log('data', data);
+    success: (data: FileResponse) => {
+      if (data.file) {
+        editor?.value?.chain().focus().setImage({ src: `${FILE_URL}${data.file.url}` }).run();
+      }
+      
       isOpen.value = false;
       return 'Image uploaded successfully';
     },

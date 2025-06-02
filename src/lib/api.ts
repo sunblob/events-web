@@ -1,6 +1,6 @@
 import { ofetch } from 'ofetch';
 import { API_URL } from './constants';
-import type { ConferenceResponse, LoginResponse, PageFile, User } from './types';
+import type { ConferenceResponse, FileResponse, LoginResponse, User } from './types';
 
 export class Api {
   static async login({ email, password }: { email: string; password: string }) {
@@ -56,10 +56,12 @@ export class Api {
       formData.append('file', file);
       formData.append('page_id', pageId);
 
-      const response = await ofetch<PageFile>(`${API_URL}/files/upload`, {
+      const response = await ofetch<FileResponse>(`${API_URL}/files/upload`, {
         method: 'POST',
         headers: {
           Accept: 'application/x-www-form-urlencoded',
+          // TODO: remove this
+          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2V2ZW50cy1hcGkvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzQ4ODc4MDM0LCJleHAiOjE3NDg4ODE2MzQsIm5iZiI6MTc0ODg3ODAzNCwianRpIjoiQld0Z2lxSGlpUGlBSGp5SCIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.PkRMk_1FjdyFLOBYbmDkrkxspEfpgM7IJulhs2ygnB0`,
         },
         responseType: 'json',
         body: formData,
