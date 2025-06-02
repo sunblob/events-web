@@ -2,11 +2,16 @@
 import { computed, type Component } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Toggle } from '@/components/ui/toggle';
-import { Code2Icon, TextQuoteIcon } from 'lucide-vue-next';
+import { SquareCodeIcon, TextQuoteIcon } from 'lucide-vue-next';
 import { useEditorStore } from '@/stores/editor';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type NodeType = 'blockquote' | 'codeBlock';
+
+const nodeIcons: Record<NodeType, Component> = {
+  blockquote: TextQuoteIcon,
+  codeBlock: SquareCodeIcon,
+};
 
 const props = defineProps<{
   type: NodeType;
@@ -17,15 +22,26 @@ const store = useEditorStore();
 const { editor } = storeToRefs(store);
 
 const isActive = computed(() => editor.value?.isActive(props.type));
+const canToggleNode = computed(() => {
+  if (!editor.value) return false;
 
-const nodeIcons: Record<NodeType, Component> = {
-  blockquote: TextQuoteIcon,
-  codeBlock: Code2Icon,
-};
+  try {
+    return props.type === 'codeBlock'
+      ? editor.value.can().toggleCodeBlock()
+      : editor.value.can().toggleBlockquote();
+  } catch {
+    return false;
+  }
+});
 
 const toggleNode = () => {
   if (!editor.value) return;
-  editor.value.chain().focus().toggleMark(props.type).run();
+
+  if (props.type === 'blockquote') {
+    editor.value.chain().focus().toggleBlockquote().run();
+  } else {
+    editor.value.chain().focus().toggleCodeBlock().run();
+  }
 };
 </script>
 
@@ -36,6 +52,7 @@ const toggleNode = () => {
         <Toggle
           :data-state="isActive ? 'on' : 'off'"
           :state="isActive ? 'on' : 'off'"
+          :disabled="!canToggleNode"
           @click="toggleNode"
         >
           <component :is="nodeIcons[props.type]" class="h-4 w-4" />

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { PaintbrushIcon } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
+
+import { BanIcon, PaintbrushIcon } from 'lucide-vue-next';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,23 +10,67 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toggle } from '@/components/ui/toggle';
+import { useEditorStore } from '@/stores/editor';
 
-const highlightOptions = [{ color: '' }];
+type HighlightOption = {
+  color: string;
+  label: string;
+};
+
+const highlightOptions: HighlightOption[] = [
+  { color: '#fca5a5', label: 'Red' },
+  { color: '#86efac', label: 'Green' },
+  { color: '#93c5fd', label: 'Blue' },
+  { color: '#fde047', label: 'Yellow' },
+  { color: '#d8b4fe', label: 'Purple' },
+];
+
+const store = useEditorStore();
+
+const { editor } = storeToRefs(store);
+
+const isActive = computed(() => editor.value?.isActive('highlight'));
+const isDisabled = computed(() => {
+  if (!editor.value) return true;
+  if (
+    editor.value.isActive('codeBlock') ||
+    editor.value.isActive('code') ||
+    editor.value.isActive('imageUpload')
+  )
+    return true;
+  return false;
+});
+
+const toggleHighlight = (color: string) => {
+  console.log(color);
+  editor.value?.chain().focus().toggleHighlight({ color }).run();
+};
 </script>
 
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Toggle>
+      <Toggle :disabled="isDisabled">
         <div class="flex items-center gap-1">
           <PaintbrushIcon class="h-4 w-4" />
         </div>
       </Toggle>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
-      <DropdownMenuItem v-for="option in listOptions" :key="option.value" as-child>
-        <ListButton :list-type="option.value" :editor="editor" />
-      </DropdownMenuItem>
+      <div class="flex gap-2">
+        <Toggle
+          v-for="option in highlightOptions"
+          :key="option.color"
+          :data-state="editor?.isActive('highlight', { color: option.color }) ? 'on' : 'off'"
+          :state="editor?.isActive('highlight', { color: option.color }) ? 'on' : 'off'"
+          @click="toggleHighlight(option.color)"
+        >
+          <div :style="{ backgroundColor: option.color }" class="h-4 w-4 rounded-full" />
+        </Toggle>
+        <Toggle @click="editor?.chain().focus().unsetHighlight().run()">
+          <BanIcon class="h-4 w-4" />
+        </Toggle>
+      </div>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { UndoIcon, RedoIcon } from 'lucide-vue-next';
+import { Undo2Icon, Redo2Icon } from 'lucide-vue-next';
 import { useEditorStore } from '@/stores/editor';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -14,8 +14,8 @@ const props = defineProps<{
 }>();
 
 const historyIcons = {
-  undo: UndoIcon,
-  redo: RedoIcon,
+  undo: Undo2Icon,
+  redo: Redo2Icon,
 };
 
 const store = useEditorStore();
