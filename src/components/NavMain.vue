@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import {
+  CalendarIcon,
+  ChevronRightIcon,
+  UserIcon,
+  UserRoundCogIcon,
+  UserRoundPenIcon,
+} from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
   SidebarGroup,
   SidebarMenuItem,
   SidebarMenu,
@@ -9,16 +19,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuAction,
 } from '@/components/ui/sidebar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  CalendarIcon,
-  ChevronRightIcon,
-  UserIcon,
-  UserRoundCogIcon,
-  UserRoundPenIcon,
-} from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
-import { storeToRefs } from 'pinia';
 
 const menuItems = [
   {

@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { useForm } from 'vee-validate';
-import { z } from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-
-import { useAuthStore } from '@/stores/auth';
+import { LoaderCircleIcon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+import { useForm } from 'vee-validate';
+import { useRouter } from 'vue-router';
+import { toast } from 'vue-sonner';
+import { z } from 'zod';
 
 import ToggleThemeButton from '@/components/ToggleThemeButton.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { storeToRefs } from 'pinia';
-import { LoaderCircleIcon } from 'lucide-vue-next';
-import { toast } from 'vue-sonner';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const store = useAuthStore();
@@ -36,15 +35,20 @@ const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 const onSubmit = handleSubmit(async (values) => {
-  try {
-    await store.login(values);
-    router.push('/dashboard');
-    toast.success('Login successful');
-  } catch (error) {
-    toast.error('Invalid email or password');
-  } finally {
-    store.loading = false;
-  }
+  toast.promise(store.login(values), {
+    loading: 'Logging in...',
+    success: () => {
+      router.push('/dashboard');
+      return 'Login successful';
+    },
+    error: (error: Error) => {
+      console.log('error', error);
+      return 'Invalid email or password';
+    },
+    finally: () => {
+      store.loading = false;
+    },
+  });
 });
 </script>
 

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
 
 import { Undo2Icon, Redo2Icon } from 'lucide-vue-next';
-import { useEditorStore } from '@/stores/editor';
+import { storeToRefs } from 'pinia';
+
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useEditorStore } from '@/stores/editor';
 
 type HistoryAction = 'undo' | 'redo';
 

@@ -1,20 +1,20 @@
 <script setup lang="ts">
+import { EditorContent } from '@tiptap/vue-3';
 import { storeToRefs } from 'pinia';
 
-import { EditorContent } from '@tiptap/vue-3';
 import { useEditorStore } from '@/stores/editor';
 
-import MarkButton from './MarkButton.vue';
-import UndoRedoButton from './UndoRedoButton.vue';
-import ListDropdownMenu from './ListDropdownMenu.vue';
-import Separator from '../ui/separator/Separator.vue';
-import NodeButton from './NodeButton.vue';
 import HeadingDropdownMenu from './HeadingDropdownMenu.vue';
+import HighlightButton from './HighlightButton.vue';
+import ImageButton from './ImageButton.vue';
 import LinkButton from './LinkButton.vue';
+import ListDropdownMenu from './ListDropdownMenu.vue';
+import MarkButton from './MarkButton.vue';
+import NodeButton from './NodeButton.vue';
 import TableMenu from './TableMenu.vue';
 import TextAlignButton from './TextAlignButton.vue';
-import ImageButton from './ImageButton.vue';
-import HighlightButton from './HighlightButton.vue';
+import UndoRedoButton from './UndoRedoButton.vue';
+import Separator from '../ui/separator/Separator.vue';
 
 const store = useEditorStore();
 

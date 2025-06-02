@@ -1,4 +1,5 @@
 import { ofetch } from 'ofetch';
+
 import { API_URL } from './constants';
 import type { ConferenceResponse, FileResponse, LoginResponse, User } from './types';
 

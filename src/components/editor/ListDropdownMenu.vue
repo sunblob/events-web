@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
-import { storeToRefs } from 'pinia';
 
-import { useEditorStore } from '@/stores/editor';
+import { ListIcon, ChevronDownIcon, ListOrderedIcon, ListTodoIcon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
 
 import {
   DropdownMenu,
@@ -11,8 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toggle } from '@/components/ui/toggle';
-
-import { ListIcon, ChevronDownIcon, ListOrderedIcon, ListTodoIcon } from 'lucide-vue-next';
+import { useEditorStore } from '@/stores/editor';
 
 type ListOption = {
   icon: Component;

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { toast } from 'vue-sonner';
-import { storeToRefs } from 'pinia';
 
 import { ImagePlusIcon } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { storeToRefs } from 'pinia';
+import { toast } from 'vue-sonner';
 
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogHeader,
@@ -16,10 +15,11 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Api } from '@/lib/api';
+import { FILE_URL } from '@/lib/constants';
 import type { FileResponse } from '@/lib/types';
 import { useEditorStore } from '@/stores/editor';
-import { FILE_URL } from '@/lib/constants';
 
 const store = useEditorStore();
 const { editor } = storeToRefs(store);
@@ -50,9 +50,13 @@ const handleUpload = async () => {
     loading: 'Uploading image...',
     success: (data: FileResponse) => {
       if (data.file) {
-        editor?.value?.chain().focus().setImage({ src: `${FILE_URL}${data.file.url}` }).run();
+        editor?.value
+          ?.chain()
+          .focus()
+          .setImage({ src: `${FILE_URL}${data.file.url}` })
+          .run();
       }
-      
+
       isOpen.value = false;
       return 'Image uploaded successfully';
     },

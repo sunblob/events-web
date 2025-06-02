@@ -1,20 +1,19 @@
-import { defineStore } from 'pinia';
-import { useEditor } from '@tiptap/vue-3';
-
-import TextAlign from '@tiptap/extension-text-align';
-import Typography from '@tiptap/extension-typography';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
+import Highlight from '@tiptap/extension-highlight';
+import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
-import Highlight from '@tiptap/extension-highlight';
-import TaskList from '@tiptap/extension-task-list';
+import TableHeader from '@tiptap/extension-table-header';
+import TableRow from '@tiptap/extension-table-row';
 import TaskItem from '@tiptap/extension-task-item';
-import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
+import TaskList from '@tiptap/extension-task-list';
+import TextAlign from '@tiptap/extension-text-align';
+import Typography from '@tiptap/extension-typography';
+import Underline from '@tiptap/extension-underline';
+import StarterKit from '@tiptap/starter-kit';
+import { useEditor } from '@tiptap/vue-3';
+import { defineStore } from 'pinia';
 
 export const useEditorStore = defineStore('editor', () => {
   const editor = useEditor({
@@ -88,18 +87,45 @@ export const useEditorStore = defineStore('editor', () => {
       Table.configure({
         resizable: true,
       }),
-      TableRow,
-      TableHeader,
-      TableCell,
+      TableRow.configure({
+        HTMLAttributes: {
+          class: 'editor-table-row',
+        },
+      }),
+      TableHeader.configure({
+        HTMLAttributes: {
+          class: 'editor-table-header',
+        },
+      }),
+      TableCell.configure({
+        HTMLAttributes: {
+          class: 'editor-table-cell',
+        },
+      }),
       Highlight.configure({
         multicolor: true,
       }),
-      TaskList,
+      TaskList.configure({
+        HTMLAttributes: {
+          class: 'editor-task-list',
+        },
+      }),
       TaskItem.configure({
         nested: true,
+        HTMLAttributes: {
+          class: 'editor-task-item',
+        },
       }),
-      Link,
-      Image
+      Link.configure({
+        HTMLAttributes: {
+          class: 'editor-link',
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'editor-image',
+        },
+      }),
     ],
     content: '',
   });

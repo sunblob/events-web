@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
-import { storeToRefs } from 'pinia';
-import { Toggle } from '@/components/ui/toggle';
+
 import { BoldIcon, ItalicIcon, StrikethroughIcon, Code2Icon, UnderlineIcon } from 'lucide-vue-next';
-import { useEditorStore } from '@/stores/editor';
+import { storeToRefs } from 'pinia';
+
+import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useEditorStore } from '@/stores/editor';
 
 type MarkType = 'bold' | 'italic' | 'strike' | 'code' | 'underline';
 
