@@ -31,6 +31,7 @@ export class Api {
       responseType: 'json',
       headers: {
         Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
     return response;
@@ -60,8 +61,7 @@ export class Api {
         method: 'POST',
         headers: {
           Accept: 'application/x-www-form-urlencoded',
-          // TODO: remove this
-          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2V2ZW50cy1hcGkvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzQ4ODc4MDM0LCJleHAiOjE3NDg4ODE2MzQsIm5iZiI6MTc0ODg3ODAzNCwianRpIjoiQld0Z2lxSGlpUGlBSGp5SCIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.PkRMk_1FjdyFLOBYbmDkrkxspEfpgM7IJulhs2ygnB0`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         responseType: 'json',
         body: formData,

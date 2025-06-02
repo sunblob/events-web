@@ -19,7 +19,58 @@ import Image from '@tiptap/extension-image';
 export const useEditorStore = defineStore('editor', () => {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        blockquote: {
+          HTMLAttributes: {
+            class: 'editor-blockquote',
+          },
+        },
+        bold: {
+          HTMLAttributes: {
+            class: 'editor-bold',
+          },
+        },
+        italic: {
+          HTMLAttributes: {
+            class: 'editor-italic',
+          },
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: 'editor-list-item',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'editor-ordered-list',
+          },
+        },
+        paragraph: {
+          HTMLAttributes: {
+            class: 'editor-paragraph',
+          },
+        },
+        strike: {
+          HTMLAttributes: {
+            class: 'editor-strike',
+          },
+        },
+        heading: {
+          HTMLAttributes: {
+            class: 'editor-heading',
+          },
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'editor-bullet-list',
+          },
+        },
+        code: {
+          HTMLAttributes: {
+            class: 'editor-code',
+          },
+        },
+      }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
