@@ -6,7 +6,6 @@ import { BanIcon, PaintbrushIcon } from 'lucide-vue-next';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toggle } from '@/components/ui/toggle';
@@ -29,7 +28,6 @@ const store = useEditorStore();
 
 const { editor } = storeToRefs(store);
 
-const isActive = computed(() => editor.value?.isActive('highlight'));
 const isDisabled = computed(() => {
   if (!editor.value) return true;
   if (
@@ -42,7 +40,6 @@ const isDisabled = computed(() => {
 });
 
 const toggleHighlight = (color: string) => {
-  console.log(color);
   editor.value?.chain().focus().toggleHighlight({ color }).run();
 };
 </script>

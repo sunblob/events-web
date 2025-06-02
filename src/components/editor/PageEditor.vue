@@ -14,6 +14,7 @@ import LinkButton from './LinkButton.vue';
 import TableMenu from './TableMenu.vue';
 import TextAlignButton from './TextAlignButton.vue';
 import ImageButton from './ImageButton.vue';
+import HighlightButton from './HighlightButton.vue';
 
 const store = useEditorStore();
 
@@ -47,6 +48,7 @@ const getJSON = () => {
         <MarkButton type="strike" />
         <MarkButton type="code" />
         <MarkButton type="underline" />
+        <HighlightButton />
         <LinkButton />
       </div>
       <Separator orientation="vertical" class="data-[orientation=vertical]:h-4" />
@@ -228,5 +230,11 @@ const getJSON = () => {
   float: left;
   height: 0;
   pointer-events: none;
+}
+
+.tiptap.ProseMirror a {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>

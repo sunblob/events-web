@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { CornerDownLeftIcon, LinkIcon, Trash2Icon } from 'lucide-vue-next';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toggle } from '@/components/ui/toggle';
@@ -30,10 +29,36 @@ const isDisabled = computed(() => {
     return true;
   return false;
 });
+
+const link = ref('');
+const isOpen = ref(false);
+const toggleMenu = (value: boolean) => {
+  if (value) {
+    link.value = editor.value?.getAttributes('link')?.href || '';
+  }
+};
+
+const addLink = () => {
+  if (!editor.value) return;
+
+  if (link.value === '' || !link.value.startsWith('http')) {
+    return;
+  }
+
+  editor.value.chain().focus().extendMarkRange('link').setLink({ href: link.value }).run();
+};
+
+const removeLink = () => {
+  if (!editor.value) return;
+  editor.value.chain().focus().unsetLink().run();
+
+  link.value = '';
+  isOpen.value = false;
+};
 </script>
 
 <template>
-  <DropdownMenu>
+  <DropdownMenu v-model:open="isOpen" @update:open="toggleMenu">
     <DropdownMenuTrigger as-child>
       <Toggle
         :disabled="isDisabled"
@@ -45,12 +70,12 @@ const isDisabled = computed(() => {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <div class="flex items-center gap-2">
-        <Input type="text" placeholder="Enter link" />
-        <Button variant="ghost" size="icon">
+        <Input type="url" placeholder="Enter link" v-model="link" @keyup.enter="addLink" />
+        <Button variant="ghost" size="icon" @click="addLink">
           <CornerDownLeftIcon class="h-4 w-4" />
         </Button>
         <Separator orientation="vertical" class="data-[orientation=vertical]:h-4" />
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" @click="removeLink">
           <Trash2Icon class="h-4 w-4" />
         </Button>
       </div>

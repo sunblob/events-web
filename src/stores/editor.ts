@@ -39,7 +39,9 @@ export const useEditorStore = defineStore('editor', () => {
       TableRow,
       TableHeader,
       TableCell,
-      Highlight,
+      Highlight.configure({
+        multicolor: true,
+      }),
       TaskList,
       TaskItem.configure({
         nested: true,

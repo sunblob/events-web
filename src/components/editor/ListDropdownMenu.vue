@@ -58,8 +58,6 @@ const filteredOptions = computed(() =>
   listOptions.filter((option) => props.types.includes(option.value)),
 );
 
-console.log(filteredOptions.value);
-
 const toggleList = (listType: ListOption['value']) => {
   if (!editor.value) return;
 

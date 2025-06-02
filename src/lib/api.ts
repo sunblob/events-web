@@ -1,6 +1,6 @@
 import { ofetch } from 'ofetch';
 import { API_URL } from './constants';
-import type { ConferenceResponse, LoginResponse, User } from './types';
+import type { ConferenceResponse, LoginResponse, PageFile, User } from './types';
 
 export class Api {
   static async login({ email, password }: { email: string; password: string }) {
@@ -47,6 +47,28 @@ export class Api {
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to get conferences');
+    }
+  }
+
+  static async uploadImage(pageId: string, file: File) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('page_id', pageId);
+
+      const response = await ofetch<PageFile>(`${API_URL}/files/upload`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/x-www-form-urlencoded',
+        },
+        responseType: 'json',
+        body: formData,
+      });
+
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to upload image');
     }
   }
 }
