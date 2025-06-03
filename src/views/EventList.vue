@@ -1,3 +1,26 @@
+<script setup lang="ts">
+import { onMounted } from 'vue';
+
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
+
+import HomeHeader from '@/components/HomeHeader.vue';
+import { useEventStore } from '@/stores/events';
+
+const router = useRouter();
+const eventStore = useEventStore();
+
+const { events } = storeToRefs(eventStore);
+
+const navigateToEvent = (id: number) => {
+  router.push(`/events/${id}`);
+};
+
+onMounted(async () => {
+  await eventStore.getEvents();
+});
+</script>
+
 <template>
   <HomeHeader />
   <main class="container mx-auto py-6 px-4 md:px-0">
@@ -20,29 +43,3 @@
     </div>
   </main>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-
-import { useRouter } from 'vue-router';
-
-import HomeHeader from '@/components/HomeHeader.vue';
-import { Api } from '@/lib/api';
-import type { ConferenceYear } from '@/lib/types';
-
-const router = useRouter();
-const events = ref<ConferenceYear[]>([]);
-
-const navigateToEvent = (id: number) => {
-  router.push(`/events/${id}`);
-};
-
-onMounted(async () => {
-  try {
-    const response = await Api.getEvents();
-    events.value = response.data;
-  } catch (error) {
-    console.error('Error loading events:', error);
-  }
-});
-</script>
