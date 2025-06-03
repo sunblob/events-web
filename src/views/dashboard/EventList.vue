@@ -53,12 +53,12 @@ const filteredEvents = computed(() => {
 
       <Sheet>
         <SheetTrigger as-child>
-          <Button>Create conference</Button>
+          <Button>Create event</Button>
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Create new user</SheetTitle>
-            <SheetDescription> Create a new user with the following details. </SheetDescription>
+            <SheetTitle>Create new event</SheetTitle>
+            <SheetDescription> Create a new event with the following details. </SheetDescription>
           </SheetHeader>
           <div class="flex flex-col gap-4 px-4">
             <Input placeholder="Name" />
@@ -94,7 +94,7 @@ const filteredEvents = computed(() => {
         </CardContent>
         <CardFooter class="justify-between mt-auto">
           <Button variant="outline" as-child>
-            <RouterLink :to="{ name: 'conference-details', params: { year: event.year } }">
+            <RouterLink :to="{ name: 'dashboard-event-details', params: { year: event.year } }">
               Edit
             </RouterLink>
           </Button>
