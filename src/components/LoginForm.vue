@@ -42,7 +42,7 @@ const onSubmit = handleSubmit(async (values) => {
       return 'Login successful';
     },
     error: (error: Error) => {
-      console.log('error', error);
+      console.warn('error', error);
       return 'Invalid email or password';
     },
     finally: () => {

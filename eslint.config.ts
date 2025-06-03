@@ -42,8 +42,13 @@ export default defineConfigWithVueTs(
         'error',
         {
           groups: [
-            ['builtin', 'external', 'internal'],
-            ['parent', 'sibling', 'index', 'object', 'type'],
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling'],
+            'index',
+            'object',
+            'type',
           ],
           pathGroups: [
             {
@@ -67,6 +72,7 @@ export default defineConfigWithVueTs(
           'newlines-between': 'always',
         },
       ],
+      'import/no-duplicates': 'error',
       // General
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },

@@ -23,6 +23,10 @@ const { editor } = storeToRefs(store);
 const getJSON = () => {
   console.log(store.editor?.getJSON());
 };
+
+const getHTML = () => {
+  console.log(store.editor?.getHTML());
+};
 </script>
 
 <template>
@@ -63,6 +67,7 @@ const getJSON = () => {
     </div>
     <EditorContent :editor="editor" role="presentation" class="h-full" />
     <button @click="getJSON">Get JSON</button>
+    <button @click="getHTML">Get HTML</button>
   </div>
 </template>
 

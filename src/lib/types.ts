@@ -66,3 +66,4 @@ export type FileResponse = {
 export type ConferenceResponse = BaseResponse<ConferenceYear>;
 export type ConferencePageResponse = BaseResponse<ConferencePage>;
 export type PageFileResponse = BaseResponse<PageFile>;
+export type UserResponse = BaseResponse<User>;
