@@ -15,16 +15,33 @@
       </div>
 
       <div v-if="event.pages && event.pages.length > 0">
-        <h2 class="text-2xl font-semibold mb-4">Pages</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div v-for="page in event.pages" :key="page.id"
-               class="border rounded-lg p-4 hover:border-primary transition-colors">
-            <h3 class="text-xl font-semibold mb-2">{{ page.title }}</h3>
-            <div v-if="page.content?.blocks" class="text-muted-foreground">
-              <div v-for="(block, index) in page.content.blocks" :key="index">
-                <h4 v-if="block.type === 'heading'" class="text-lg font-medium mt-2">{{ block.content }}</h4>
-                <p v-if="block.type === 'paragraph'" class="mt-2">{{ block.content }}</p>
-              </div>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold mb-2">{{ currentPage?.title }}</h2>
+          <div class="flex space-x-2">
+            <button
+              @click="currentPageIndex = currentPageIndex - 1"
+              :disabled="currentPageIndex === 0"
+              class="px-4 py-2 border rounded-lg disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span class="px-4 py-2">{{ currentPageIndex + 1 }} / {{ event.pages.length }}</span>
+            <button
+              @click="currentPageIndex = currentPageIndex + 1"
+              :disabled="currentPageIndex === event.pages.length - 1"
+              class="px-4 py-2 border rounded-lg disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+
+        <div v-if="currentPage" class="border rounded-lg p-4">
+
+          <div v-if="currentPage.content?.blocks" class="text-muted-foreground">
+            <div v-for="(block, index) in currentPage.content.blocks" :key="index">
+              <h4 v-if="block.type === 'heading'" class="text-lg font-medium mt-2">{{ block.content }}</h4>
+              <p v-if="block.type === 'paragraph'" class="mt-2">{{ block.content }}</p>
             </div>
           </div>
         </div>
@@ -37,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import HomeHeader from '@/components/HomeHeader.vue'
 import { Api } from '@/lib/api'
@@ -46,6 +63,12 @@ import type { ConferenceYear } from '@/lib/types'
 const route = useRoute()
 const router = useRouter()
 const event = ref<ConferenceYear | null>(null)
+const currentPageIndex = ref(0)
+
+const currentPage = computed(() => {
+  if (!event.value?.pages) return null
+  return event.value.pages[currentPageIndex.value]
+})
 
 onMounted(async () => {
   try {
