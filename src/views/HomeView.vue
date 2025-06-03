@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import HomeHeader from '@/components/HomeHeader.vue';
 import PageEditor from '@/components/editor/PageEditor.vue';
+import HomeHeader from '@/components/HomeHeader.vue';
 </script>
 
 <template>

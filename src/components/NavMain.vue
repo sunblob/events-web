@@ -1,48 +1,28 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
+import { CalendarIcon, UserIcon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+
 import {
   SidebarGroup,
   SidebarMenuItem,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarMenuAction,
 } from '@/components/ui/sidebar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  CalendarIcon,
-  ChevronRightIcon,
-  UserIcon,
-  UserRoundCogIcon,
-  UserRoundPenIcon,
-} from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
-import { storeToRefs } from 'pinia';
 
 const menuItems = [
   {
     title: 'Users',
-    link: '/users',
+    link: '/dashboard/users',
     icon: UserIcon,
     defaultOpen: true,
-    items: [
-      {
-        title: 'Admins',
-        link: '/users/admins',
-        icon: UserRoundCogIcon,
-      },
-      {
-        title: 'Editors',
-        link: '/users/editors',
-        icon: UserRoundPenIcon,
-      },
-    ],
     role: ['admin'],
   },
   {
     title: 'Conferences',
-    link: '/conferences',
+    link: '/dashboard/conferences',
     icon: CalendarIcon,
     defaultOpen: false,
     role: ['admin', 'editor'],
@@ -53,43 +33,27 @@ const store = useAuthStore();
 
 const { user } = storeToRefs(store);
 
-console.log(user.value);
+const filteredMenuItems = computed(() => {
+  return menuItems.filter((item) => item.role.includes(user.value?.role ?? 'editor'));
+});
 </script>
 
 <template>
   <SidebarGroup>
     <SidebarMenu>
-      <Collapsible
-        v-for="item in menuItems"
+      <SidebarMenuItem
+        v-for="item in filteredMenuItems"
         :key="item.title"
         :default-open="item.defaultOpen"
         as-child
-        class="group/collapsible"
       >
-        <SidebarMenuItem>
-          <SidebarMenuButton>
+        <SidebarMenuButton as-child>
+          <RouterLink :to="item.link">
             <component :is="item.icon" />
             <span>{{ item.title }}</span>
-          </SidebarMenuButton>
-          <CollapsibleTrigger v-if="item.items && item.items.length > 0" as-child>
-            <SidebarMenuAction class="group-data-[state=open]/collapsible:rotate-90">
-              <ChevronRightIcon />
-            </SidebarMenuAction>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <SidebarMenuSub>
-              <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
-                <SidebarMenuSubButton as-child>
-                  <RouterLink :to="subItem.link">
-                    <component :is="subItem.icon" />
-                    <span>{{ subItem.title }}</span>
-                  </RouterLink>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            </SidebarMenuSub>
-          </CollapsibleContent>
-        </SidebarMenuItem>
-      </Collapsible>
+          </RouterLink>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
     </SidebarMenu>
   </SidebarGroup>
 </template>

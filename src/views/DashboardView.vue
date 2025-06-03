@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
+
+import { RouterView } from 'vue-router';
+
 import AppSidebar from '@/components/AppSidebar.vue';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-
 import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();

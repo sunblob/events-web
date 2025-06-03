@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
-import { storeToRefs } from 'pinia';
+
 import { AlignLeftIcon, AlignCenterIcon, AlignRightIcon, AlignJustifyIcon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
 
 import { Toggle } from '@/components/ui/toggle';
-import { useEditorStore } from '@/stores/editor';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useEditorStore } from '@/stores/editor';
 
 type TextAlignType = 'left' | 'center' | 'right' | 'justify';
 

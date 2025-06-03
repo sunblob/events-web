@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { storeToRefs } from 'pinia';
 
 import { CornerDownLeftIcon, LinkIcon, Trash2Icon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Toggle } from '@/components/ui/toggle';
 import { Input } from '@/components/ui/input';
+import { Toggle } from '@/components/ui/toggle';
 import { useEditorStore } from '@/stores/editor';
-import { Button } from '@/components/ui/button';
+
 import Separator from '../ui/separator/Separator.vue';
 
 const store = useEditorStore();

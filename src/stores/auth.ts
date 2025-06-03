@@ -1,10 +1,14 @@
 import { computed, ref } from 'vue';
+
 import { defineStore } from 'pinia';
+import { useRouter } from 'vue-router';
 
 import { Api } from '@/lib/api';
 import type { User } from '@/lib/types';
 
 export const useAuthStore = defineStore('auth', () => {
+  const router = useRouter();
+
   const user = ref<User | null>(null);
   const isAutheticated = computed(() => !!user.value);
   const loading = ref(false);
@@ -22,16 +26,17 @@ export const useAuthStore = defineStore('auth', () => {
     await Api.logout();
     localStorage.removeItem('token');
     user.value = null;
+    router.push({ name: 'sign-in' });
   };
 
   const getMe = async () => {
     try {
       const response = await Api.getMe();
       user.value = response;
-
-      console.log(user.value);
     } catch (error) {
       console.error(error);
+
+      router.push({ name: 'sign-in' });
     }
   };
 

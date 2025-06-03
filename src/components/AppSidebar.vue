@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
+
 import NavMain from './NavMain.vue';
 import ToggleThemeButton from './ToggleThemeButton.vue';
 </script>

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
-import { storeToRefs } from 'pinia';
-import { Toggle } from '@/components/ui/toggle';
+
 import { SquareCodeIcon, TextQuoteIcon } from 'lucide-vue-next';
-import { useEditorStore } from '@/stores/editor';
+import { storeToRefs } from 'pinia';
+
+import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useEditorStore } from '@/stores/editor';
 
 type NodeType = 'blockquote' | 'codeBlock';
 

@@ -1,6 +1,15 @@
 import { ofetch } from 'ofetch';
+
 import { API_URL } from './constants';
-import type { ConferenceResponse, FileResponse, LoginResponse, User } from './types';
+
+import type {
+  ConferenceResponse,
+  ConferenceYear,
+  FileResponse,
+  LoginResponse,
+  User,
+  UserResponse,
+} from './types';
 
 export class Api {
   static async login({ email, password }: { email: string; password: string }) {
@@ -31,6 +40,7 @@ export class Api {
       responseType: 'json',
       headers: {
         Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
     return response;
@@ -38,7 +48,7 @@ export class Api {
 
   static async getConferences() {
     try {
-      const response = await ofetch<ConferenceResponse>(`${API_URL}/conferences`, {
+      const response = await ofetch<ConferenceResponse>(`${API_URL}/event-years`, {
         method: 'GET',
         responseType: 'json',
       });
@@ -60,8 +70,7 @@ export class Api {
         method: 'POST',
         headers: {
           Accept: 'application/x-www-form-urlencoded',
-          // TODO: remove this
-          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2V2ZW50cy1hcGkvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzQ4ODc4MDM0LCJleHAiOjE3NDg4ODE2MzQsIm5iZiI6MTc0ODg3ODAzNCwianRpIjoiQld0Z2lxSGlpUGlBSGp5SCIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.PkRMk_1FjdyFLOBYbmDkrkxspEfpgM7IJulhs2ygnB0`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         responseType: 'json',
         body: formData,
@@ -71,6 +80,126 @@ export class Api {
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to upload image');
+    }
+  }
+
+  static async getUsers() {
+    const response = await ofetch<UserResponse>(`${API_URL}/users`, {
+      method: 'GET',
+      responseType: 'json',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+
+    return response;
+  }
+
+  static async deleteUser(id: string | number) {
+    try {
+      const response = await ofetch(`${API_URL}/users/${id}`, {
+        method: 'DELETE',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to delete user');
+    }
+  }
+
+  static async createUser(payload: Partial<User>) {
+    try {
+      const response = await ofetch(`${API_URL}/users`, {
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: payload,
+      });
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to create user');
+    }
+  }
+
+  static async updateUser(id: string | number, payload: Partial<User>) {
+    try {
+      const response = await ofetch(`${API_URL}/users/${id}`, {
+        method: 'PUT',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: payload,
+      });
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to update user');
+    }
+  }
+
+  static async createConferenceYear(payload: Partial<ConferenceYear>) {
+    try {
+      const response = await ofetch(`${API_URL}/event-years`, {
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: payload,
+      });
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to create conference year');
+    }
+  }
+
+  static async updateConferenceYear(id: number | string, payload: Partial<ConferenceYear>) {
+    try {
+      const response = await ofetch(`${API_URL}/event-years/${id}`, {
+        method: 'PUT',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: payload,
+      });
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to update conference year');
+    }
+  }
+
+  static async deleteConferenceYear(id: number | string) {
+    try {
+      const response = await ofetch(`${API_URL}/event-years/${id}`, {
+        method: 'DELETE',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to delete conference year');
     }
   }
 }
