@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { type Component, computed } from 'vue';
+
 import { storeToRefs } from 'pinia';
 
-import { useEditorStore } from '@/stores/editor';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { useEditorStore } from '@/stores/editor';
 
 type TableCell = {
   label: string;

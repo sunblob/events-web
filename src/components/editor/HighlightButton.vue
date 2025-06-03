@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
 
 import { BanIcon, PaintbrushIcon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+
 import {
   DropdownMenu,
   DropdownMenuContent,

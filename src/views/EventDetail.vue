@@ -2,7 +2,7 @@
   <HomeHeader />
   <main class="container mx-auto py-6 px-4 md:px-0">
     <button
-      @click="router.push('/events')"
+      @click="router.push('/')"
       class="mb-6 flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
     >
       <span>← Back to Events</span>
@@ -37,10 +37,11 @@
         </div>
 
         <div v-if="currentPage" class="border rounded-lg p-4">
-
           <div v-if="currentPage.content?.blocks" class="text-muted-foreground">
             <div v-for="(block, index) in currentPage.content.blocks" :key="index">
-              <h4 v-if="block.type === 'heading'" class="text-lg font-medium mt-2">{{ block.content }}</h4>
+              <h4 v-if="block.type === 'heading'" class="text-lg font-medium mt-2">
+                {{ block.content }}
+              </h4>
               <p v-if="block.type === 'paragraph'" class="mt-2">{{ block.content }}</p>
             </div>
           </div>
@@ -54,29 +55,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import HomeHeader from '@/components/HomeHeader.vue'
-import { Api } from '@/lib/api'
-import type { ConferenceYear } from '@/lib/types'
+import { ref, onMounted, computed } from 'vue';
 
-const route = useRoute()
-const router = useRouter()
-const event = ref<ConferenceYear | null>(null)
-const currentPageIndex = ref(0)
+import { useRoute, useRouter } from 'vue-router';
+
+import HomeHeader from '@/components/HomeHeader.vue';
+import { Api } from '@/lib/api';
+import type { ConferenceYear } from '@/lib/types';
+
+const route = useRoute();
+const router = useRouter();
+const event = ref<ConferenceYear | null>(null);
+const currentPageIndex = ref(0);
 
 const currentPage = computed(() => {
-  if (!event.value?.pages) return null
-  return event.value.pages[currentPageIndex.value]
-})
+  if (!event.value?.pages) return null;
+  return event.value.pages[currentPageIndex.value];
+});
 
 onMounted(async () => {
   try {
-    const id = Number(route.params.id)
-    const response = await Api.getEvent(id)
-    event.value = response.data
+    const id = Number(route.params.id);
+    const response = await Api.getEvent(id);
+    event.value = response.data;
   } catch (error) {
-    console.error('Error loading event:', error)
+    console.error('Error loading event:', error);
   }
-})
+});
 </script>

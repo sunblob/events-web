@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import EventList from '../views/EventList.vue';
-import EventDetail from '../views/EventDetail.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,18 +32,46 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/views/DashboardView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+      children: [
+        {
+          path: 'users',
+          name: 'users',
+          component: () => import('@/views/UsersView.vue'),
+        },
+        {
+          path: 'conferences',
+          name: 'conferences',
+          component: () => import('@/views/ConferencesView.vue'),
+        },
+        {
+          path: 'conferences/:year/edit',
+          name: 'conference-details',
+          component: () => import('@/views/ConferenceDetails.vue'),
+        },
+      ],
     },
     {
       path: '/',
       name: 'events',
-      component: EventList,
+      component: () => import('@/views/EventList.vue'),
     },
     {
       path: '/events/:id',
       name: 'event-detail',
-      component: EventDetail,
-    }
+      component: () => import('@/views/EventDetail.vue'),
+    },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !localStorage.getItem('token')) {
+    next({ name: 'sign-in' });
+  } else {
+    next();
+  }
 });
 
 export default router;

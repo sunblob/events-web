@@ -1,16 +1,9 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useEditorStore } from '@/stores/editor';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { TableIcon, TableCellsMergeIcon, TableCellsSplitIcon } from 'lucide-vue-next';
-import TableButton from './TableButton.vue';
+import { storeToRefs } from 'pinia';
+
 import {
   TablePlus,
   TableMinus,
@@ -22,6 +15,15 @@ import {
   ColumnDelete,
   ToggleHeader,
 } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useEditorStore } from '@/stores/editor';
+
+import TableButton from './TableButton.vue';
 
 const store = useEditorStore();
 
