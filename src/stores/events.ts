@@ -7,18 +7,18 @@ import { useConfirmDialog } from '@/composables/use-confrim-dialog';
 import { Api } from '@/lib/api';
 import type { ConferenceYear } from '@/lib/types';
 
-export const useConferenceStore = defineStore('conference', () => {
-  const conferences = ref<ConferenceYear[]>([]);
+export const useEventStore = defineStore('events', () => {
+  const events = ref<ConferenceYear[]>([]);
   const confirmDialog = useConfirmDialog();
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const getConferences = async () => {
+  const getEvents = async () => {
     isLoading.value = true;
     error.value = null;
     try {
-      const { data } = await Api.getConferences();
-      conferences.value = data;
+      const { data } = await Api.getEvents();
+      events.value = data;
     } catch (e) {
       error.value = 'Ошибка загрузки годов конференций';
     } finally {
@@ -26,12 +26,12 @@ export const useConferenceStore = defineStore('conference', () => {
     }
   };
 
-  const createConference = async (payload: Partial<ConferenceYear>) => {
+  const createEvent = async (payload: Partial<ConferenceYear>) => {
     isLoading.value = true;
     error.value = null;
     try {
-      await Api.createConferenceYear(payload);
-      await getConferences();
+      await Api.createEvent(payload);
+      await getEvents();
     } catch (e) {
       error.value = 'Ошибка создания года конференции';
     } finally {
@@ -39,12 +39,12 @@ export const useConferenceStore = defineStore('conference', () => {
     }
   };
 
-  const updateConference = async (id: number, payload: Partial<ConferenceYear>) => {
+  const updateEvent = async (id: number, payload: Partial<ConferenceYear>) => {
     isLoading.value = true;
     error.value = null;
     try {
-      await Api.updateConferenceYear(id, payload);
-      await getConferences();
+      await Api.updateEvent(id, payload);
+      await getEvents();
     } catch (e) {
       error.value = 'Ошибка обновления года конференции';
     } finally {
@@ -52,12 +52,12 @@ export const useConferenceStore = defineStore('conference', () => {
     }
   };
 
-  const deleteConference = async (id: number | string) => {
+  const deleteEvent = async (id: number | string) => {
     isLoading.value = true;
     error.value = null;
     try {
-      await Api.deleteConferenceYear(id);
-      await getConferences();
+      await Api.deleteEvent(id);
+      await getEvents();
     } catch (e) {
       error.value = 'Ошибка удаления года конференции';
     } finally {
@@ -65,30 +65,30 @@ export const useConferenceStore = defineStore('conference', () => {
     }
   };
 
-  const openDeleteConferenceDialog = (yearId: string | number) => {
+  const openDeleteEventDialog = (yearId: string | number) => {
     confirmDialog.open({
-      title: 'Delete conference?',
-      description: 'Are you sure you want to delete this conference? This action cannot be undone.',
+      title: 'Delete event?',
+      description: 'Are you sure you want to delete this event? This action cannot be undone.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
       onConfirm: async () => {
-        toast.promise(deleteConference(yearId), {
-          loading: 'Deleting conference...',
-          success: 'Conference deleted successfully',
-          error: 'Failed to delete conference',
+        toast.promise(deleteEvent(yearId), {
+          loading: 'Deleting event...',
+          success: 'Event deleted successfully',
+          error: 'Failed to delete event',
         });
       },
     });
   };
 
   return {
-    conferences,
+    events,
     isLoading,
     error,
-    getConferences,
-    createConference,
-    updateConference,
-    deleteConference,
-    openDeleteConferenceDialog,
+    getEvents,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    openDeleteEventDialog,
   };
 });
