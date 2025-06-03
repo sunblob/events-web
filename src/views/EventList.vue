@@ -7,10 +7,10 @@
         <div v-for="event in events" :key="event.id"
              class="border rounded-lg p-6 cursor-pointer hover:border-primary transition-colors"
              @click="navigateToEvent(event.id)">
-          <h2 class="text-xl font-semibold mb-2">{{ event.title }}</h2>
+          <h2 class="text-xl font-semibold mb-2">{{ event.title || `Event ${event.year}` }}</h2>
           <p class="text-muted-foreground">{{ event.description }}</p>
           <div class="mt-4 text-sm text-muted-foreground">
-            <p>Date: {{ formatDate(event.date) }}</p>
+            <p>Year: {{ event.year }}</p>
           </div>
         </div>
       </div>
@@ -30,10 +30,6 @@ const events = ref<ConferenceYear[]>([])
 
 const navigateToEvent = (id: number) => {
   router.push(`/events/${id}`)
-}
-
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('en-US')
 }
 
 onMounted(async () => {

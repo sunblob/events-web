@@ -1,6 +1,6 @@
 import { ofetch } from 'ofetch';
 import { API_URL } from './constants';
-import type { ConferenceResponse, FileResponse, LoginResponse, User, Event, EventResponse } from './types';
+import type { ConferenceResponse, FileResponse, LoginResponse, User, EventResponse, ConferenceYear } from './types';
 
 export class Api {
   static async login({ email, password }: { email: string; password: string }) {
@@ -76,7 +76,7 @@ export class Api {
 
   static async getEvents() {
     try {
-      const response = await ofetch<EventResponse>(`${API_URL}/events`, {
+      const response = await ofetch<EventResponse>(`${API_URL}/event-years`, {
         method: 'GET',
         responseType: 'json',
       });
@@ -90,7 +90,7 @@ export class Api {
 
   static async getEvent(id: number) {
     try {
-      const response = await ofetch<Event>(`${API_URL}/events/${id}`, {
+      const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years/${id}`, {
         method: 'GET',
         responseType: 'json',
       });
