@@ -67,3 +67,6 @@ export type ConferenceResponse = BaseResponse<ConferenceYear>
 export type ConferencePageResponse = BaseResponse<ConferencePage>
 export type PageFileResponse = BaseResponse<PageFile>
 
+export type EventResponse = BaseResponse<ConferenceYear>
+export type EventPageResponse = BaseResponse<ConferencePage>
+

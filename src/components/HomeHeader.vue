@@ -11,6 +11,7 @@ import ToggleThemeButton from './ToggleThemeButton.vue';
     <div class="flex items-center justify-between container mx-auto py-4 px-4 md:px-0">
       <div class="flex items-center gap-4">
         <RouterLink to="/" class="font-medium"> Home </RouterLink>
+        <RouterLink to="/events" class="font-medium"> Events </RouterLink>
       </div>
       <div class="flex items-center gap-2">
         <ToggleThemeButton />

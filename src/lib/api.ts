@@ -1,6 +1,6 @@
 import { ofetch } from 'ofetch';
 import { API_URL } from './constants';
-import type { ConferenceResponse, FileResponse, LoginResponse, User } from './types';
+import type { ConferenceResponse, FileResponse, LoginResponse, User, Event, EventResponse } from './types';
 
 export class Api {
   static async login({ email, password }: { email: string; password: string }) {
@@ -71,6 +71,34 @@ export class Api {
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to upload image');
+    }
+  }
+
+  static async getEvents() {
+    try {
+      const response = await ofetch<EventResponse>(`${API_URL}/events`, {
+        method: 'GET',
+        responseType: 'json',
+      });
+
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get events');
+    }
+  }
+
+  static async getEvent(id: number) {
+    try {
+      const response = await ofetch<Event>(`${API_URL}/events/${id}`, {
+        method: 'GET',
+        responseType: 'json',
+      });
+
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get event');
     }
   }
 }
