@@ -46,7 +46,7 @@ export class Api {
     return response;
   }
 
-  static async getConferences() {
+  static async getEvents() {
     try {
       const response = await ofetch<ConferenceResponse>(`${API_URL}/event-years`, {
         method: 'GET',
@@ -150,7 +150,7 @@ export class Api {
     }
   }
 
-  static async createConferenceYear(payload: Partial<ConferenceYear>) {
+  static async createEvent(payload: Partial<ConferenceYear>) {
     try {
       const response = await ofetch(`${API_URL}/event-years`, {
         method: 'POST',
@@ -168,7 +168,7 @@ export class Api {
     }
   }
 
-  static async updateConferenceYear(id: number | string, payload: Partial<ConferenceYear>) {
+  static async updateEvent(id: number | string, payload: Partial<ConferenceYear>) {
     try {
       const response = await ofetch(`${API_URL}/event-years/${id}`, {
         method: 'PUT',
@@ -186,7 +186,7 @@ export class Api {
     }
   }
 
-  static async deleteConferenceYear(id: number | string) {
+  static async deleteEvent(id: number | string) {
     try {
       const response = await ofetch(`${API_URL}/event-years/${id}`, {
         method: 'DELETE',
@@ -201,5 +201,13 @@ export class Api {
       console.log('error', error);
       throw new Error('Failed to delete conference year');
     }
+  }
+
+  static async getEvent(id: number | string) {
+    const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years/${id}`, {
+      method: 'GET',
+      responseType: 'json',
+    });
+    return response;
   }
 }

@@ -21,8 +21,8 @@ const menuItems = [
     role: ['admin'],
   },
   {
-    title: 'Conferences',
-    link: '/dashboard/conferences',
+    title: 'Events',
+    link: '/dashboard/events',
     icon: CalendarIcon,
     defaultOpen: false,
     role: ['admin', 'editor'],

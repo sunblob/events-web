@@ -30,9 +30,16 @@ export type ConferencePage = {
   id: number;
   title: string;
   slug: string;
-  content: string;
+  content: {
+    blocks: Array<{
+      type: 'heading' | 'paragraph';
+      content: string;
+    }>;
+  };
   event_year_id: number;
   files?: PageFile[];
+  created_at: string;
+  updated_at: string;
 };
 
 export type PageFile = {

@@ -4,9 +4,24 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: () => import('@/views/HomeView.vue'),
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('@/views/AboutView.vue'),
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('@/views/ContactView.vue'),
+    },
+    {
+      path: '/registration',
+      name: 'registration',
+      component: () => import('@/views/RegistrationView.vue'),
     },
     {
       path: '/auth/sign-in',
@@ -23,20 +38,30 @@ const router = createRouter({
       children: [
         {
           path: 'users',
-          name: 'users',
-          component: () => import('@/views/UsersView.vue'),
+          name: 'dashboard-users',
+          component: () => import('@/views/dashboard/UsersList.vue'),
         },
         {
-          path: 'conferences',
-          name: 'conferences',
-          component: () => import('@/views/ConferencesView.vue'),
+          path: 'events',
+          name: 'dashboard-events',
+          component: () => import('@/views/dashboard/EventList.vue'),
         },
         {
-          path: 'conferences/:year/edit',
-          name: 'conference-details',
-          component: () => import('@/views/ConferenceDetails.vue'),
+          path: 'events/:year/edit',
+          name: 'dashboard-event-details',
+          component: () => import('@/views/dashboard/EventDetails.vue'),
         },
       ],
+    },
+    {
+      path: '/',
+      name: 'events',
+      component: () => import('@/views/EventList.vue'),
+    },
+    {
+      path: '/events/:id',
+      name: 'event-detail',
+      component: () => import('@/views/EventDetail.vue'),
     },
   ],
 });

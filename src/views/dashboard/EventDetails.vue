@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useRouteParams } from '@vueuse/router';
 
-import { useConferenceStore } from '@/stores/conferences';
+import { useEventStore } from '@/stores/events';
 
-const conferenceStore = useConferenceStore();
+const eventStore = useEventStore();
 
 const year = useRouteParams('year');
 </script>

@@ -30,18 +30,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { useConferenceStore } from '@/stores/conferences';
+import { useEventStore } from '@/stores/events';
 
 const search = useRouteQuery('search', '');
-const conferenceStore = useConferenceStore();
+const eventStore = useEventStore();
 
 onMounted(async () => {
-  await conferenceStore.getConferences();
+  await eventStore.getEvents();
 });
 
-const filteredConferences = computed(() => {
-  return conferenceStore.conferences.filter((conference) =>
-    conference.title?.toLowerCase().includes(search.value.toLowerCase()),
+const filteredEvents = computed(() => {
+  return eventStore.events.filter((event) =>
+    event.title?.toLowerCase().includes(search.value.toLowerCase()),
   );
 });
 </script>
@@ -53,12 +53,12 @@ const filteredConferences = computed(() => {
 
       <Sheet>
         <SheetTrigger as-child>
-          <Button>Create conference</Button>
+          <Button>Create event</Button>
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Create new user</SheetTitle>
-            <SheetDescription> Create a new user with the following details. </SheetDescription>
+            <SheetTitle>Create new event</SheetTitle>
+            <SheetDescription> Create a new event with the following details. </SheetDescription>
           </SheetHeader>
           <div class="flex flex-col gap-4 px-4">
             <Input placeholder="Name" />
@@ -81,34 +81,31 @@ const filteredConferences = computed(() => {
       </Sheet>
     </div>
     <div
-      v-if="filteredConferences.length > 0"
+      v-if="filteredEvents.length > 0"
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
     >
-      <Card v-for="conference in filteredConferences" :key="conference.id">
+      <Card v-for="event in filteredEvents" :key="event.id">
         <CardHeader>
-          <CardTitle>{{ conference.year }}</CardTitle>
-          <CardDescription>{{ conference.title }}</CardDescription>
+          <CardTitle>{{ event.year }}</CardTitle>
+          <CardDescription>{{ event.title }}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{{ conference.description }}</p>
+          <p>{{ event.description }}</p>
         </CardContent>
         <CardFooter class="justify-between mt-auto">
           <Button variant="outline" as-child>
-            <RouterLink :to="{ name: 'conference-details', params: { year: conference.year } }">
+            <RouterLink :to="{ name: 'dashboard-event-details', params: { year: event.year } }">
               Edit
             </RouterLink>
           </Button>
-          <Button
-            variant="destructive"
-            @click="conferenceStore.openDeleteConferenceDialog(conference.id)"
-          >
+          <Button variant="destructive" @click="eventStore.openDeleteEventDialog(event.id)">
             Delete
           </Button>
         </CardFooter>
       </Card>
     </div>
     <div v-else>
-      <p>No conferences found</p>
+      <p>No events found</p>
     </div>
   </div>
 </template>
