@@ -1,8 +1,9 @@
-import { ofetch } from 'ofetch';
+import { FetchError, ofetch } from 'ofetch';
 
 import { API_URL } from './constants';
 
 import type {
+  ConferencePage,
   ConferenceResponse,
   ConferenceYear,
   FileResponse,
@@ -22,7 +23,9 @@ export class Api {
 
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to login');
     }
   }
@@ -55,7 +58,9 @@ export class Api {
 
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to get conferences');
     }
   }
@@ -78,7 +83,9 @@ export class Api {
 
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to upload image');
     }
   }
@@ -109,7 +116,9 @@ export class Api {
 
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to delete user');
     }
   }
@@ -127,7 +136,9 @@ export class Api {
       });
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to create user');
     }
   }
@@ -145,14 +156,16 @@ export class Api {
       });
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to update user');
     }
   }
 
   static async createEvent(payload: Partial<ConferenceYear>) {
     try {
-      const response = await ofetch(`${API_URL}/event-years`, {
+      const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years`, {
         method: 'POST',
         responseType: 'json',
         headers: {
@@ -163,8 +176,10 @@ export class Api {
       });
       return response;
     } catch (error) {
-      console.log('error', error);
-      throw new Error('Failed to create conference year');
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to create event');
     }
   }
 
@@ -181,7 +196,9 @@ export class Api {
       });
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to update conference year');
     }
   }
@@ -198,16 +215,93 @@ export class Api {
       });
       return response;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
       throw new Error('Failed to delete conference year');
     }
   }
 
-  static async getEvent(id: number | string) {
-    const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years/${id}`, {
+  static async getEventByYear(year: number) {
+    const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years/${year}`, {
       method: 'GET',
       responseType: 'json',
     });
     return response;
+  }
+
+  static async deleteEventPage(pageId: string | number) {
+    try {
+      const response = await ofetch(`${API_URL}/pages/${pageId}`, {
+        method: 'DELETE',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to delete event page');
+    }
+  }
+
+  static async getPageById(pageId: string | number) {
+    const response = await ofetch<{ data: ConferencePage }>(`${API_URL}/pages/${pageId}`, {
+      method: 'GET',
+      responseType: 'json',
+    });
+    return response;
+  }
+
+  static async getPageBySlug(slug: string) {
+    const response = await ofetch<{ data: ConferencePage }>(`${API_URL}/pages/slug/${slug}`, {
+      method: 'GET',
+      responseType: 'json',
+    });
+    return response;
+  }
+
+  static async createPage(payload: Partial<ConferencePage>) {
+    try {
+      const response = await ofetch<{ data: ConferencePage }>(`${API_URL}/pages`, {
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: payload,
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to create page');
+    }
+  }
+
+  static async updatePage(pageId: string | number, payload: Partial<ConferencePage>) {
+    try {
+      const response = await ofetch<{ data: ConferencePage }>(`${API_URL}/pages/${pageId}`, {
+        method: 'PUT',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: payload,
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to update page');
+    }
   }
 }

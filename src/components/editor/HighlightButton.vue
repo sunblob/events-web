@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import { BanIcon, PaintbrushIcon } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
@@ -25,23 +26,19 @@ const highlightOptions: HighlightOption[] = [
   { color: '#d8b4fe', label: 'Purple' },
 ];
 
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
+const { editor } = defineProps<{
+  editor: Editor;
+}>();
 
 const isDisabled = computed(() => {
-  if (!editor.value) return true;
-  if (
-    editor.value.isActive('codeBlock') ||
-    editor.value.isActive('code') ||
-    editor.value.isActive('imageUpload')
-  )
+  if (!editor) return true;
+  if (editor.isActive('codeBlock') || editor.isActive('code') || editor.isActive('imageUpload'))
     return true;
   return false;
 });
 
 const toggleHighlight = (color: string) => {
-  editor.value?.chain().focus().toggleHighlight({ color }).run();
+  editor?.chain().focus().toggleHighlight({ color }).run();
 };
 </script>
 
@@ -59,13 +56,13 @@ const toggleHighlight = (color: string) => {
         <Toggle
           v-for="option in highlightOptions"
           :key="option.color"
-          :data-state="editor?.isActive('highlight', { color: option.color }) ? 'on' : 'off'"
-          :state="editor?.isActive('highlight', { color: option.color }) ? 'on' : 'off'"
+          :data-state="editor.isActive('highlight', { color: option.color }) ? 'on' : 'off'"
+          :state="editor.isActive('highlight', { color: option.color }) ? 'on' : 'off'"
           @click="toggleHighlight(option.color)"
         >
           <div :style="{ backgroundColor: option.color }" class="h-4 w-4 rounded-full" />
         </Toggle>
-        <Toggle @click="editor?.chain().focus().unsetHighlight().run()">
+        <Toggle @click="editor.chain().focus().unsetHighlight().run()">
           <BanIcon class="h-4 w-4" />
         </Toggle>
       </div>

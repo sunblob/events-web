@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import { SquareCodeIcon, TextQuoteIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useEditorStore } from '@/stores/editor';
 
 type NodeType = 'blockquote' | 'codeBlock';
 
@@ -15,34 +14,29 @@ const nodeIcons: Record<NodeType, Component> = {
   codeBlock: SquareCodeIcon,
 };
 
-const props = defineProps<{
+const { editor, type } = defineProps<{
   type: NodeType;
+  editor: Editor;
 }>();
 
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
-
-const isActive = computed(() => editor.value?.isActive(props.type));
+const isActive = computed(() => editor.isActive(type));
 const canToggleNode = computed(() => {
-  if (!editor.value) return false;
+  if (!editor) return false;
 
   try {
-    return props.type === 'codeBlock'
-      ? editor.value.can().toggleCodeBlock()
-      : editor.value.can().toggleBlockquote();
+    return type === 'codeBlock' ? editor.can().toggleCodeBlock() : editor.can().toggleBlockquote();
   } catch {
     return false;
   }
 });
 
 const toggleNode = () => {
-  if (!editor.value) return;
+  if (!editor) return;
 
-  if (props.type === 'blockquote') {
-    editor.value.chain().focus().toggleBlockquote().run();
+  if (type === 'blockquote') {
+    editor.chain().focus().toggleBlockquote().run();
   } else {
-    editor.value.chain().focus().toggleCodeBlock().run();
+    editor.chain().focus().toggleCodeBlock().run();
   }
 };
 </script>
@@ -57,11 +51,11 @@ const toggleNode = () => {
           :disabled="!canToggleNode"
           @click="toggleNode"
         >
-          <component :is="nodeIcons[props.type]" class="h-4 w-4" />
+          <component :is="nodeIcons[type]" class="h-4 w-4" />
         </Toggle>
       </TooltipTrigger>
       <TooltipContent>
-        <p class="capitalize">{{ props.type }}</p>
+        <p class="capitalize">{{ type }}</p>
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>

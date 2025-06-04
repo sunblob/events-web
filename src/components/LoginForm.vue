@@ -53,7 +53,7 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="relative min-w-[460px] rounded-lg border py-6 px-4">
+  <div class="relative rounded-lg border py-6 px-4">
     <ToggleThemeButton class="absolute top-6 right-4" />
 
     <form @submit="onSubmit" class="flex flex-col gap-4">

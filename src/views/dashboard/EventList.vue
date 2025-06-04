@@ -4,6 +4,7 @@ import { computed, onMounted } from 'vue';
 import { useRouteQuery } from '@vueuse/router';
 import { RouterLink } from 'vue-router';
 
+import EventForm from '@/components/EventForm.vue';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,17 +16,9 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -60,23 +53,7 @@ const filteredEvents = computed(() => {
             <SheetTitle>Create new event</SheetTitle>
             <SheetDescription> Create a new event with the following details. </SheetDescription>
           </SheetHeader>
-          <div class="flex flex-col gap-4 px-4">
-            <Input placeholder="Name" />
-            <Input placeholder="Email" />
-            <Input type="password" placeholder="Password" />
-            <Select>
-              <SelectTrigger class="w-full">
-                <SelectValue placeholder="Select a role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin"> Admin </SelectItem>
-                <SelectItem value="editor"> Editor </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <SheetFooter>
-            <Button>Create</Button>
-          </SheetFooter>
+          <EventForm />
         </SheetContent>
       </Sheet>
     </div>
@@ -93,7 +70,7 @@ const filteredEvents = computed(() => {
           <p>{{ event.description }}</p>
         </CardContent>
         <CardFooter class="justify-between mt-auto">
-          <Button variant="outline" as-child>
+          <Button as-child>
             <RouterLink :to="{ name: 'dashboard-event-details', params: { year: event.year } }">
               Edit
             </RouterLink>

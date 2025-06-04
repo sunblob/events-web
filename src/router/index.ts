@@ -51,6 +51,11 @@ const router = createRouter({
           name: 'dashboard-event-details',
           component: () => import('@/views/dashboard/EventDetails.vue'),
         },
+        {
+          path: 'events/:year/pages/:pageId/edit',
+          name: 'dashboard-event-page-details',
+          component: () => import('@/views/dashboard/EventPageDetails.vue'),
+        },
       ],
     },
     {

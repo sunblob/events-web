@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import {
   HeadingIcon,
   ChevronDownIcon,
@@ -9,7 +10,6 @@ import {
   Heading3Icon,
   Heading4Icon,
 } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import {
   DropdownMenu,
@@ -18,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toggle } from '@/components/ui/toggle';
-import { useEditorStore } from '@/stores/editor';
 
 type HeadingOption = {
   icon: Component;
@@ -49,17 +48,17 @@ const headingOptions: HeadingOption[] = [
   },
 ];
 
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
+const { editor } = defineProps<{
+  editor: Editor;
+}>();
 
 const canToggleHeading = computed(() => {
-  if (!editor.value) return false;
+  if (!editor) return false;
 
   if (
-    editor.value.isActive('bulletList') ||
-    editor.value.isActive('orderedList') ||
-    editor.value.isActive('taskList')
+    editor.isActive('bulletList') ||
+    editor.isActive('orderedList') ||
+    editor.isActive('taskList')
   ) {
     return false;
   }
@@ -68,9 +67,9 @@ const canToggleHeading = computed(() => {
 });
 
 const toggleHeading = (headingLevel: HeadingOption['level']) => {
-  if (!editor.value) return;
+  if (!editor) return;
 
-  editor.value.chain().focus().toggleHeading({ level: headingLevel }).run();
+  editor.chain().focus().toggleHeading({ level: headingLevel }).run();
 };
 </script>
 
@@ -87,8 +86,8 @@ const toggleHeading = (headingLevel: HeadingOption['level']) => {
     <DropdownMenuContent>
       <DropdownMenuItem v-for="option in headingOptions" :key="option.level" as-child>
         <Toggle
-          :data-state="editor?.isActive('heading', { level: option.level }) ? 'on' : 'off'"
-          :state="editor?.isActive('heading', { level: option.level }) ? 'on' : 'off'"
+          :data-state="editor.isActive('heading', { level: option.level }) ? 'on' : 'off'"
+          :state="editor.isActive('heading', { level: option.level }) ? 'on' : 'off'"
           @click="toggleHeading(option.level)"
           class="w-full justify-between"
         >
