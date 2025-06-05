@@ -44,6 +44,8 @@ export type PageFile = {
   path: string;
   mimetype: string;
   page_id: number;
+  originalName: string;
+  is_editor_only: number;
   created_at: string;
   updated_at: string;
 };

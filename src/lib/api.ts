@@ -89,11 +89,12 @@ export class Api {
     }
   }
 
-  static async uploadImage(pageId: string, file: File) {
+  static async uploadImage(pageId: string, file: File, isEditorOnly = false) {
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('page_id', pageId);
+      formData.append('is_editor_only', isEditorOnly ? 'true' : 'false');
 
       const response = await ofetch<FileResponse>(`${API_URL}/files/upload`, {
         method: 'POST',
@@ -329,9 +330,9 @@ export class Api {
     }
   }
 
-  static async deleteFile(fileId: number | string) {
+  static async deleteFile(fileName: string) {
     try {
-      const response = await ofetch(`${API_URL}/files/${fileId}`, {
+      const response = await ofetch(`${API_URL}/files/${fileName}`, {
         method: 'DELETE',
         responseType: 'json',
         headers: {
@@ -345,6 +346,28 @@ export class Api {
         throw error.data;
       }
       throw new Error('Failed to delete file');
+    }
+  }
+
+  static async deleteFileFromPage(pageId: number | string, fileId: number | string) {
+    try {
+      const response = await ofetch(`${API_URL}/files/${fileId}/detach`, {
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: {
+          page_id: pageId,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to delete file from page');
     }
   }
 

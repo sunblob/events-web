@@ -72,11 +72,13 @@ const router = createRouter({
       path: '/events/:year',
       name: 'event-detail',
       component: () => import('@/views/EventDetail.vue'),
-    },
-    {
-      path: '/events/:year/:slug',
-      name: 'event-page',
-      component: () => import('@/views/EventPage.vue'),
+      children: [
+        {
+          path: ':slug',
+          name: 'event-page',
+          component: () => import('@/views/EventPage.vue'),
+        },
+      ],
     },
   ],
 });

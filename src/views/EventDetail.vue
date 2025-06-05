@@ -1,3 +1,54 @@
+<script setup lang="ts">
+import { ref, onMounted, computed, watch } from 'vue';
+
+import { useRouteParams } from '@vueuse/router';
+import { useRouter } from 'vue-router';
+
+import HomeHeader from '@/components/HomeHeader.vue';
+import { Button } from '@/components/ui/button';
+import { Api } from '@/lib/api';
+import { FILE_URL } from '@/lib/constants';
+import type { ConferenceYear } from '@/lib/types';
+
+const router = useRouter();
+const event = ref<ConferenceYear | null>(null);
+const currentPageIndex = ref(0);
+
+const currentPage = computed(() => {
+  if (!event.value?.pages) return null;
+  return event.value.pages[currentPageIndex.value];
+});
+
+const year = useRouteParams<number>('year');
+const slug = useRouteParams<string>('slug');
+
+onMounted(async () => {
+  try {
+    const response = await Api.getEventByYear(year.value);
+    event.value = response.data;
+
+    if (event.value && event.value.pages && event.value.pages.length > 0) {
+      console.log(slug.value);
+      router.push({
+        name: 'event-page',
+        params: { slug: slug.value || event.value.pages[0].slug },
+      });
+    }
+  } catch (error) {
+    console.error('Error loading event:', error);
+  }
+});
+
+watch(currentPage, () => {
+  if (currentPage.value) {
+    router.push({
+      name: 'event-page',
+      params: { slug: currentPage.value.slug },
+    });
+  }
+});
+</script>
+
 <template>
   <HomeHeader />
   <main class="container mx-auto py-6 px-4 md:px-0">
@@ -36,16 +87,19 @@
           </div>
         </div>
 
-        <div v-if="currentPage" class="p-4 rounded-lg">
+        <RouterView />
+
+        <!-- <div v-if="currentPage" class="p-4 rounded-lg">
           <div v-if="currentPage.content" v-html="currentPage.content"></div>
-          <div class="mt-4">
-            <Button as-child>
-              <RouterLink :to="`/events/${event.year}/${currentPage.slug}`">
-                View Files
-              </RouterLink>
-            </Button>
-          </div>
         </div>
+
+        <div v-if="currentPage" class="border-t">
+          <div v-for="file in currentPage.files" :key="file.id">
+            <a :href="`${FILE_URL}/storage/${file.filename}`" target="_blank">
+              {{ file.originalName || file.filename }}
+            </a>
+          </div>
+        </div> -->
       </div>
     </div>
 
@@ -54,35 +108,3 @@
     </div>
   </main>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-
-import { useRouteParams } from '@vueuse/router';
-import { useRouter } from 'vue-router';
-
-import HomeHeader from '@/components/HomeHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Api } from '@/lib/api';
-import type { ConferenceYear } from '@/lib/types';
-
-const router = useRouter();
-const event = ref<ConferenceYear | null>(null);
-const currentPageIndex = ref(0);
-
-const currentPage = computed(() => {
-  if (!event.value?.pages) return null;
-  return event.value.pages[currentPageIndex.value];
-});
-
-const year = useRouteParams<number>('year');
-
-onMounted(async () => {
-  try {
-    const response = await Api.getEventByYear(year.value);
-    event.value = response.data;
-  } catch (error) {
-    console.error('Error loading event:', error);
-  }
-});
-</script>

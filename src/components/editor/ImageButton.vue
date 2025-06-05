@@ -47,7 +47,7 @@ const handleFileChange = (e: Event) => {
 const handleUpload = async () => {
   if (!file.value) return;
 
-  const promise = Api.uploadImage(pageId.value, file.value);
+  const promise = Api.uploadImage(pageId.value, file.value, true);
 
   toast.promise(promise, {
     loading: 'Uploading image...',
