@@ -19,8 +19,8 @@ export type ConferenceYear = {
   id: number;
   year: number;
   title: string;
-  description: string;
-  is_active: number;
+  description?: string;
+  is_active?: number;
   created_at: string;
   updated_at: string;
   pages?: ConferencePage[];
@@ -30,12 +30,7 @@ export type ConferencePage = {
   id: number;
   title: string;
   slug: string;
-  content: {
-    blocks: Array<{
-      type: 'heading' | 'paragraph';
-      content: string;
-    }>;
-  };
+  content: string;
   event_year_id: number;
   files?: PageFile[];
   created_at: string;

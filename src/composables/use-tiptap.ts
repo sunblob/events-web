@@ -11,12 +11,10 @@ import TaskList from '@tiptap/extension-task-list';
 import TextAlign from '@tiptap/extension-text-align';
 import Typography from '@tiptap/extension-typography';
 import Underline from '@tiptap/extension-underline';
-import { EditorState } from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit';
 import { useEditor } from '@tiptap/vue-3';
-import { defineStore } from 'pinia';
 
-export const useEditorStore = defineStore('editor', () => {
+export const useTiptap = (content: string) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -128,27 +126,10 @@ export const useEditorStore = defineStore('editor', () => {
         },
       }),
     ],
-    content: '',
+    content,
   });
-
-  function setContent(content: string) {
-    try {
-      editor.value?.commands.setContent(content);
-
-      // The following code clears the history. Hopefully without side effects.
-      const newEditorState = EditorState.create({
-        doc: editor.value?.state.doc,
-        plugins: editor.value?.state.plugins,
-        schema: editor.value?.state.schema,
-      });
-      editor.value?.view.updateState(newEditorState);
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   return {
     editor,
-    setContent,
   };
-});
+};

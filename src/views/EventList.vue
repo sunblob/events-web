@@ -12,8 +12,8 @@ const eventStore = useEventStore();
 
 const { events } = storeToRefs(eventStore);
 
-const navigateToEvent = (id: number) => {
-  router.push(`/events/${id}`);
+const navigateToEvent = (year: number) => {
+  router.push(`/events/${year}`);
 };
 
 onMounted(async () => {
@@ -29,9 +29,9 @@ onMounted(async () => {
       <div class="flex flex-col space-y-4">
         <div
           v-for="event in events"
-          :key="event.id"
+          :key="event.year"
           class="border rounded-lg p-6 cursor-pointer hover:border-primary transition-colors"
-          @click="navigateToEvent(event.id)"
+          @click="navigateToEvent(event.year)"
         >
           <h2 class="text-xl font-semibold mb-2">{{ event.title || `Event ${event.year}` }}</h2>
           <p class="text-muted-foreground">{{ event.description }}</p>

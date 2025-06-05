@@ -5,64 +5,49 @@ import { toast } from 'vue-sonner';
 
 import { useConfirmDialog } from '@/composables/use-confrim-dialog';
 import { Api } from '@/lib/api';
-import type { ConferenceYear } from '@/lib/types';
+import type { ConferencePage, ConferenceYear } from '@/lib/types';
 
 export const useEventStore = defineStore('events', () => {
   const events = ref<ConferenceYear[]>([]);
+  const event = ref<ConferenceYear | null>(null);
   const confirmDialog = useConfirmDialog();
-  const isLoading = ref(false);
-  const error = ref<string | null>(null);
 
   const getEvents = async () => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-      const { data } = await Api.getEvents();
-      events.value = data;
-    } catch (e) {
-      error.value = 'Ошибка загрузки годов конференций';
-    } finally {
-      isLoading.value = false;
-    }
+    const { data } = await Api.getEvents();
+
+    events.value = data;
+  };
+
+  const getEventByYear = async (year: number) => {
+    const { data } = await Api.getEventByYear(year);
+    event.value = data;
+
+    return data;
   };
 
   const createEvent = async (payload: Partial<ConferenceYear>) => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-      await Api.createEvent(payload);
-      await getEvents();
-    } catch (e) {
-      error.value = 'Ошибка создания года конференции';
-    } finally {
-      isLoading.value = false;
-    }
+    const { data } = await Api.createEvent(payload);
+
+    return data;
   };
 
   const updateEvent = async (id: number, payload: Partial<ConferenceYear>) => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-      await Api.updateEvent(id, payload);
-      await getEvents();
-    } catch (e) {
-      error.value = 'Ошибка обновления года конференции';
-    } finally {
-      isLoading.value = false;
-    }
+    const { data } = await Api.updateEvent(id, payload);
+
+    return data;
   };
 
   const deleteEvent = async (id: number | string) => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-      await Api.deleteEvent(id);
-      await getEvents();
-    } catch (e) {
-      error.value = 'Ошибка удаления года конференции';
-    } finally {
-      isLoading.value = false;
-    }
+    await Api.deleteEvent(id);
+  };
+
+  const deleteEventPage = async (pageId: string | number) => {
+    await Api.deleteEventPage(pageId);
+  };
+
+  const getPageById = async (pageId: string | number) => {
+    const { data } = await Api.getPageById(pageId);
+    return data;
   };
 
   const openDeleteEventDialog = (yearId: string | number) => {
@@ -81,14 +66,53 @@ export const useEventStore = defineStore('events', () => {
     });
   };
 
+  const openDeleteEventPageDialog = (pageId: string | number, year: number) => {
+    confirmDialog.open({
+      title: 'Delete page?',
+      description: 'Are you sure you want to delete this page? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        toast.promise(deleteEventPage(pageId), {
+          loading: 'Deleting page...',
+          success: async () => {
+            await getEventByYear(year);
+            return 'Page deleted successfully';
+          },
+          error: 'Failed to delete page',
+        });
+      },
+    });
+  };
+
+  const getPageBySlug = async (slug: string) => {
+    const { data } = await Api.getPageBySlug(slug);
+    return data;
+  };
+
+  const createPage = async (payload: Partial<ConferencePage>) => {
+    const { data } = await Api.createPage(payload);
+    return data;
+  };
+
+  const updatePage = async (pageId: string | number, payload: Partial<ConferencePage>) => {
+    const { data } = await Api.updatePage(pageId, payload);
+    return data;
+  };
+
   return {
     events,
-    isLoading,
-    error,
+    event,
     getEvents,
+    getEventByYear,
     createEvent,
     updateEvent,
     deleteEvent,
     openDeleteEventDialog,
+    openDeleteEventPageDialog,
+    getPageById,
+    getPageBySlug,
+    createPage,
+    updatePage,
   };
 });

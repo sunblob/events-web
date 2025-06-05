@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { type Component, computed } from 'vue';
 
-import { storeToRefs } from 'pinia';
+import { Editor } from '@tiptap/vue-3';
 
 import { Button } from '@/components/ui/button';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { useEditorStore } from '@/stores/editor';
 
 type TableCell = {
   label: string;
@@ -14,15 +13,12 @@ type TableCell = {
   ignoreDisabled?: boolean;
 };
 
-defineProps<{
+const { editor, cell } = defineProps<{
+  editor: Editor;
   cell: TableCell;
 }>();
 
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
-
-const isActive = computed(() => editor.value?.isActive('table'));
+const isActive = computed(() => editor.isActive('table'));
 </script>
 
 <template>

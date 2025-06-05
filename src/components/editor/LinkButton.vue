@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import { CornerDownLeftIcon, LinkIcon, Trash2Icon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,22 +12,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Toggle } from '@/components/ui/toggle';
-import { useEditorStore } from '@/stores/editor';
 
 import Separator from '../ui/separator/Separator.vue';
 
-const store = useEditorStore();
+const { editor } = defineProps<{
+  editor: Editor;
+}>();
 
-const { editor } = storeToRefs(store);
-
-const isActive = computed(() => editor.value?.isActive('link'));
+const isActive = computed(() => editor.isActive('link'));
 const isDisabled = computed(() => {
-  if (!editor.value) return true;
-  if (
-    editor.value.isActive('codeBlock') ||
-    editor.value.isActive('code') ||
-    editor.value.isActive('imageUpload')
-  )
+  if (!editor) return true;
+  if (editor.isActive('codeBlock') || editor.isActive('code') || editor.isActive('imageUpload'))
     return true;
   return false;
 });
@@ -36,23 +31,23 @@ const link = ref('');
 const isOpen = ref(false);
 const toggleMenu = (value: boolean) => {
   if (value) {
-    link.value = editor.value?.getAttributes('link')?.href || '';
+    link.value = editor.getAttributes('link')?.href || '';
   }
 };
 
 const addLink = () => {
-  if (!editor.value) return;
+  if (!editor) return;
 
   if (link.value === '' || !link.value.startsWith('http')) {
     return;
   }
 
-  editor.value.chain().focus().extendMarkRange('link').setLink({ href: link.value }).run();
+  editor.chain().focus().extendMarkRange('link').setLink({ href: link.value }).run();
 };
 
 const removeLink = () => {
-  if (!editor.value) return;
-  editor.value.chain().focus().unsetLink().run();
+  if (!editor) return;
+  editor.chain().focus().unsetLink().run();
 
   link.value = '';
   isOpen.value = false;

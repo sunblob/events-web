@@ -26,9 +26,13 @@ const userStore = useUserStore();
 
 const formSchema = toTypedSchema(
   z.object({
-    name: z.string({ required_error: 'Name is required' }).default(props.user?.name ?? ''),
+    name: z
+      .string({ required_error: 'Name is required' })
+      .min(1, { message: 'Name is required' })
+      .default(props.user?.name ?? ''),
     email: z
       .string({ required_error: 'Email is required' })
+      .min(1, { message: 'Email is required' })
       .email()
       .default(props.user?.email ?? ''),
     password: z
@@ -42,7 +46,7 @@ const formSchema = toTypedSchema(
   }),
 );
 
-const { errors, handleSubmit, defineField } = useForm({
+const { errors, handleSubmit, defineField, meta } = useForm({
   validationSchema: formSchema,
 });
 
@@ -116,6 +120,6 @@ const onSubmit = handleSubmit(async (values) => {
 
       <p v-if="errors.role" class="text-sm text-red-500">{{ errors.role }}</p>
     </div>
-    <Button type="submit">{{ isEdit ? 'Update' : 'Create' }}</Button>
+    <Button type="submit" :disabled="!meta.valid">{{ isEdit ? 'Update' : 'Create' }}</Button>
   </form>
 </template>

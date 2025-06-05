@@ -1,27 +1,23 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import { BoldIcon, ItalicIcon, StrikethroughIcon, Code2Icon, UnderlineIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useEditorStore } from '@/stores/editor';
 
 type MarkType = 'bold' | 'italic' | 'strike' | 'code' | 'underline';
 
-const props = defineProps<{
+const { editor, type } = defineProps<{
+  editor: Editor;
   type: MarkType;
 }>();
 
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
-
-const isActive = computed(() => editor.value?.isActive(props.type));
+const isActive = computed(() => editor.isActive(type));
 const isDisabled = computed(() => {
-  if (!editor.value) return true;
-  if (editor.value.isActive('codeBlock')) return true;
+  if (!editor) return true;
+  if (editor.isActive('codeBlock')) return true;
   return false;
 });
 
@@ -42,8 +38,8 @@ const markIcons: Record<MarkType, Component> = {
 // };
 
 const toggleMark = () => {
-  if (!editor.value) return;
-  editor.value.chain().focus().toggleMark(props.type).run();
+  if (!editor) return;
+  editor.chain().focus().toggleMark(type).run();
 };
 </script>
 
@@ -57,11 +53,11 @@ const toggleMark = () => {
           :disabled="isDisabled"
           @click="toggleMark"
         >
-          <component :is="markIcons[props.type]" class="h-4 w-4" />
+          <component :is="markIcons[type]" class="h-4 w-4" />
         </Toggle>
       </TooltipTrigger>
       <TooltipContent>
-        <p class="capitalize">{{ props.type }}</p>
+        <p class="capitalize">{{ type }}</p>
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>

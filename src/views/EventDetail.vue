@@ -37,14 +37,7 @@
         </div>
 
         <div v-if="currentPage" class="border rounded-lg p-4">
-          <div v-if="currentPage.content?.blocks" class="text-muted-foreground">
-            <div v-for="(block, index) in currentPage.content.blocks" :key="index">
-              <h4 v-if="block.type === 'heading'" class="text-lg font-medium mt-2">
-                {{ block.content }}
-              </h4>
-              <p v-if="block.type === 'paragraph'" class="mt-2">{{ block.content }}</p>
-            </div>
-          </div>
+          <div v-if="currentPage.content" v-html="currentPage.content"></div>
         </div>
       </div>
     </div>
@@ -57,13 +50,13 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 
-import { useRoute, useRouter } from 'vue-router';
+import { useRouteParams } from '@vueuse/router';
+import { useRouter } from 'vue-router';
 
 import HomeHeader from '@/components/HomeHeader.vue';
 import { Api } from '@/lib/api';
 import type { ConferenceYear } from '@/lib/types';
 
-const route = useRoute();
 const router = useRouter();
 const event = ref<ConferenceYear | null>(null);
 const currentPageIndex = ref(0);
@@ -73,10 +66,11 @@ const currentPage = computed(() => {
   return event.value.pages[currentPageIndex.value];
 });
 
+const year = useRouteParams<number>('year');
+
 onMounted(async () => {
   try {
-    const id = Number(route.params.id);
-    const response = await Api.getEvent(id);
+    const response = await Api.getEventByYear(year.value);
     event.value = response.data;
   } catch (error) {
     console.error('Error loading event:', error);

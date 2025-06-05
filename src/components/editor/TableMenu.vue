@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import { TableIcon, TableCellsMergeIcon, TableCellsSplitIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import {
   TablePlus,
@@ -21,13 +21,12 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useEditorStore } from '@/stores/editor';
 
 import TableButton from './TableButton.vue';
 
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
+const { editor } = defineProps<{
+  editor: Editor;
+}>();
 
 type TableMenu = {
   label: string;
@@ -40,69 +39,69 @@ const tableMenu: TableMenu[] = [
   {
     label: 'Insert Table',
     icon: TablePlus,
-    action: () => editor?.value?.chain().focus().insertTable().run(),
+    action: () => editor?.chain().focus().insertTable().run(),
     ignoreDisabled: true,
   },
   {
     label: 'Delete Table',
     icon: TableMinus,
-    action: () => editor?.value?.chain().focus().deleteTable().run(),
+    action: () => editor?.chain().focus().deleteTable().run(),
   },
   {
     label: 'Add Row After',
     icon: RowAddAfter,
-    action: () => editor?.value?.chain().focus().addRowAfter().run(),
+    action: () => editor?.chain().focus().addRowAfter().run(),
   },
   {
     label: 'Add Row Before',
     icon: RowAddBefore,
-    action: () => editor?.value?.chain().focus().addRowBefore().run(),
+    action: () => editor?.chain().focus().addRowBefore().run(),
   },
   {
     label: 'Delete Row',
     icon: RowDelete,
-    action: () => editor?.value?.chain().focus().deleteRow().run(),
+    action: () => editor?.chain().focus().deleteRow().run(),
   },
   {
     label: 'Add Column After',
     icon: ColumnAddAfter,
-    action: () => editor?.value?.chain().focus().addColumnAfter().run(),
+    action: () => editor?.chain().focus().addColumnAfter().run(),
   },
   {
     label: 'Add Column Before',
     icon: ColumnAddBefore,
-    action: () => editor?.value?.chain().focus().addColumnBefore().run(),
+    action: () => editor?.chain().focus().addColumnBefore().run(),
   },
   {
     label: 'Delete Column',
     icon: ColumnDelete,
-    action: () => editor?.value?.chain().focus().deleteColumn().run(),
+    action: () => editor?.chain().focus().deleteColumn().run(),
   },
   {
     label: 'Toggle Header',
     icon: ToggleHeader,
-    action: () => editor?.value?.chain().focus().toggleHeaderRow().run(),
+    action: () => editor?.chain().focus().toggleHeaderRow().run(),
   },
   {
     label: 'Merge Cells',
     icon: TableCellsMergeIcon,
-    action: () => editor?.value?.chain().focus().mergeCells().run(),
+    action: () => editor?.chain().focus().mergeCells().run(),
   },
   {
     label: 'Split Cell',
     icon: TableCellsSplitIcon,
-    action: () => editor?.value?.chain().focus().splitCell().run(),
+    action: () => editor?.chain().focus().splitCell().run(),
   },
 ];
 
 const isDisabled = computed(() => {
-  if (!editor.value) return true;
+  if (!editor) return true;
   if (
-    editor.value.isActive('codeBlock') ||
-    editor.value.isActive('bulletList') ||
-    editor.value.isActive('orderedList') ||
-    editor.value.isActive('taskList') ||
-    editor.value.isActive('heading')
+    editor.isActive('codeBlock') ||
+    editor.isActive('bulletList') ||
+    editor.isActive('orderedList') ||
+    editor.isActive('taskList') ||
+    editor.isActive('heading')
   )
     return true;
   return false;
@@ -118,7 +117,7 @@ const isDisabled = computed(() => {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <div class="grid grid-cols-3 gap-2">
-        <TableButton v-for="cell in tableMenu" :key="cell.label" :cell="cell" />
+        <TableButton v-for="cell in tableMenu" :key="cell.label" :cell="cell" :editor="editor" />
       </div>
     </DropdownMenuContent>
   </DropdownMenu>

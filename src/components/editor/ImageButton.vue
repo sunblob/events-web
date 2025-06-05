@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
+import { useRouteParams } from '@vueuse/router';
 import { ImagePlusIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 import { toast } from 'vue-sonner';
 
 import { Button } from '@/components/ui/button';
@@ -19,13 +20,15 @@ import { Input } from '@/components/ui/input';
 import { Api } from '@/lib/api';
 import { FILE_URL } from '@/lib/constants';
 import type { FileResponse } from '@/lib/types';
-import { useEditorStore } from '@/stores/editor';
 
-const store = useEditorStore();
-const { editor } = storeToRefs(store);
+const { editor } = defineProps<{
+  editor: Editor;
+}>();
 
 const isOpen = ref(false);
 const file = ref<File | null>(null);
+
+const pageId = useRouteParams<string>('pageId');
 
 const toggleMenu = (value: boolean) => {
   isOpen.value = value;
@@ -44,16 +47,16 @@ const handleFileChange = (e: Event) => {
 const handleUpload = async () => {
   if (!file.value) return;
 
-  const promise = Api.uploadImage('1', file.value);
+  const promise = Api.uploadImage(pageId.value, file.value);
 
   toast.promise(promise, {
     loading: 'Uploading image...',
     success: (data: FileResponse) => {
       if (data.file) {
-        editor?.value
+        editor
           ?.chain()
           .focus()
-          .setImage({ src: `${FILE_URL}${data.file.url}` })
+          .setImage({ src: `${FILE_URL}${data.file.url}`, alt: data.file.original_name })
           .run();
       }
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import { ListIcon, ChevronDownIcon, ListOrderedIcon, ListTodoIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import {
   DropdownMenu,
@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toggle } from '@/components/ui/toggle';
-import { useEditorStore } from '@/stores/editor';
 
 type ListOption = {
   icon: Component;
@@ -20,6 +19,7 @@ type ListOption = {
 };
 
 type ListProps = {
+  editor: Editor;
   types: ('bulletList' | 'orderedList' | 'taskList')[];
 };
 
@@ -41,29 +41,25 @@ const listOptions: ListOption[] = [
   },
 ];
 
-const props = defineProps<ListProps>();
-
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
+const { editor, types } = defineProps<ListProps>();
 
 const canToggleList = computed(() => {
-  if (!editor.value) return false;
+  if (!editor) return false;
 
   return true;
 });
 
 const filteredOptions = computed(() =>
-  listOptions.filter((option) => props.types.includes(option.value)),
+  listOptions.filter((option) => types.includes(option.value)),
 );
 
 const toggleList = (listType: ListOption['value']) => {
-  if (!editor.value) return;
+  if (!editor) return;
 
   if (listType === 'taskList') {
-    editor.value.chain().focus().toggleTaskList().run();
+    editor.chain().focus().toggleTaskList().run();
   } else {
-    editor.value.chain().focus().toggleList(listType, 'listItem').run();
+    editor.chain().focus().toggleList(listType, 'listItem').run();
   }
 };
 </script>
@@ -82,8 +78,8 @@ const toggleList = (listType: ListOption['value']) => {
       <DropdownMenuItem v-for="option in filteredOptions" :key="option.value" as-child>
         <!-- <ListButton :list-type="option.value" /> -->
         <Toggle
-          :data-state="editor?.isActive(option.value) ? 'on' : 'off'"
-          :state="editor?.isActive(option.value) ? 'on' : 'off'"
+          :data-state="editor.isActive(option.value) ? 'on' : 'off'"
+          :state="editor.isActive(option.value) ? 'on' : 'off'"
           @click="toggleList(option.value)"
           class="w-full justify-between"
         >

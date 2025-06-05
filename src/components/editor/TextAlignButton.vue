@@ -1,27 +1,23 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
 
+import { Editor } from '@tiptap/vue-3';
 import { AlignLeftIcon, AlignCenterIcon, AlignRightIcon, AlignJustifyIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useEditorStore } from '@/stores/editor';
 
 type TextAlignType = 'left' | 'center' | 'right' | 'justify';
 
-const props = defineProps<{
+const { editor, alignment } = defineProps<{
+  editor: Editor;
   alignment: TextAlignType;
 }>();
 
-const store = useEditorStore();
-
-const { editor } = storeToRefs(store);
-
-const isActive = computed(() => editor.value?.isActive({ textAlign: props.alignment }));
+const isActive = computed(() => editor.isActive({ textAlign: alignment }));
 const isDisabled = computed(() => {
-  if (!editor.value) return true;
-  if (editor.value.isActive('codeBlock')) return true;
+  if (!editor) return true;
+  if (editor.isActive('codeBlock')) return true;
   return false;
 });
 
@@ -33,8 +29,8 @@ const textAlignIcons: Record<TextAlignType, Component> = {
 };
 
 const setAlign = () => {
-  if (!editor.value) return;
-  editor.value.chain().focus().setTextAlign(props.alignment).run();
+  if (!editor) return;
+  editor.chain().focus().setTextAlign(alignment).run();
 };
 </script>
 
@@ -48,11 +44,11 @@ const setAlign = () => {
           :disabled="isDisabled"
           @click="setAlign"
         >
-          <component :is="textAlignIcons[props.alignment]" class="h-4 w-4" />
+          <component :is="textAlignIcons[alignment]" class="h-4 w-4" />
         </Toggle>
       </TooltipTrigger>
       <TooltipContent>
-        <p class="capitalize">Align {{ props.alignment }}</p>
+        <p class="capitalize">Align {{ alignment }}</p>
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>
