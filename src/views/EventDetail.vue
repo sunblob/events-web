@@ -38,6 +38,13 @@
 
         <div v-if="currentPage" class="border rounded-lg p-4">
           <div v-if="currentPage.content" v-html="currentPage.content"></div>
+          <div class="mt-4">
+            <Button as-child>
+              <RouterLink :to="`/events/${event.year}/${currentPage.slug}`">
+                View Files
+              </RouterLink>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -54,6 +61,7 @@ import { useRouteParams } from '@vueuse/router';
 import { useRouter } from 'vue-router';
 
 import HomeHeader from '@/components/HomeHeader.vue';
+import { Button } from '@/components/ui/button';
 import { Api } from '@/lib/api';
 import type { ConferenceYear } from '@/lib/types';
 

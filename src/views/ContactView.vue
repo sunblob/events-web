@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+
 import HomeHeader from '@/components/HomeHeader.vue'
 
 const router = useRouter()

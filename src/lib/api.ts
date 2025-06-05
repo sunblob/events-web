@@ -365,4 +365,12 @@ export class Api {
       throw new Error('Failed to remove user from event');
     }
   }
+
+  static async getPageByYearAndSlug(year: string, slug: string) {
+    const response = await ofetch<{ data: ConferencePage }>(`${API_URL}/pages/year/${year}/slug/${slug}`, {
+      method: 'GET',
+      responseType: 'json',
+    });
+    return response;
+  }
 }

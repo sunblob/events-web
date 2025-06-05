@@ -68,6 +68,11 @@ const router = createRouter({
       name: 'event-detail',
       component: () => import('@/views/EventDetail.vue'),
     },
+    {
+      path: '/events/:year/:slug',
+      name: 'event-page',
+      component: () => import('@/views/EventPage.vue'),
+    },
   ],
 });
 
