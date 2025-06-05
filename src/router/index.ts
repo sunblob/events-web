@@ -56,6 +56,11 @@ const router = createRouter({
           name: 'dashboard-event-page-details',
           component: () => import('@/views/dashboard/EventPageDetails.vue'),
         },
+        {
+          path: 'events/:year/pages/create',
+          name: 'dashboard-event-page-create',
+          component: () => import('@/views/dashboard/EventPageCreate.vue'),
+        },
       ],
     },
     {

@@ -20,8 +20,7 @@ export type ConferenceYear = {
   year: number;
   title: string;
   description?: string;
-  editor_id?: number | null;
-  editor?: User;
+  users?: User[];
   is_active?: number;
   created_at: string;
   updated_at: string;

@@ -18,6 +18,11 @@ export const useEventStore = defineStore('events', () => {
     events.value = data;
   };
 
+  const getEditorEvents = async () => {
+    const { data } = await Api.getEditorEvents();
+    events.value = data;
+  };
+
   const getEventByYear = async (year: number) => {
     const { data } = await Api.getEventByYear(year);
     event.value = data;
@@ -104,6 +109,7 @@ export const useEventStore = defineStore('events', () => {
     events,
     event,
     getEvents,
+    getEditorEvents,
     getEventByYear,
     createEvent,
     updateEvent,

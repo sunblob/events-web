@@ -23,13 +23,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useAuthStore } from '@/stores/auth';
 import { useEventStore } from '@/stores/events';
 
 const search = useRouteQuery('search', '');
 const eventStore = useEventStore();
+const authStore = useAuthStore();
 
 onMounted(async () => {
-  await eventStore.getEvents();
+  await eventStore.getEditorEvents();
 });
 
 const filteredEvents = computed(() => {
@@ -44,7 +46,7 @@ const filteredEvents = computed(() => {
     <div class="flex items-center gap-2">
       <Input v-model="search" placeholder="Search" />
 
-      <Sheet>
+      <Sheet v-if="authStore.user?.role === 'admin'">
         <SheetTrigger as-child>
           <Button>Create event</Button>
         </SheetTrigger>
@@ -75,7 +77,11 @@ const filteredEvents = computed(() => {
               Edit
             </RouterLink>
           </Button>
-          <Button variant="destructive" @click="eventStore.openDeleteEventDialog(event.id)">
+          <Button
+            v-if="authStore.user?.role === 'admin'"
+            variant="destructive"
+            @click="eventStore.openDeleteEventDialog(event.id)"
+          >
             Delete
           </Button>
         </CardFooter>

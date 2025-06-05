@@ -69,6 +69,26 @@ export class Api {
     }
   }
 
+  static async getEditorEvents() {
+    try {
+      const response = await ofetch<ConferenceResponse>(`${API_URL}/event-years/editor/all`, {
+        method: 'GET',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to get conferences');
+    }
+  }
+
   static async uploadImage(pageId: string, file: File) {
     try {
       const formData = new FormData();
@@ -367,10 +387,13 @@ export class Api {
   }
 
   static async getPageByYearAndSlug(year: string, slug: string) {
-    const response = await ofetch<{ data: ConferencePage }>(`${API_URL}/pages/year/${year}/slug/${slug}`, {
-      method: 'GET',
-      responseType: 'json',
-    });
+    const response = await ofetch<{ data: ConferencePage }>(
+      `${API_URL}/pages/year/${year}/slug/${slug}`,
+      {
+        method: 'GET',
+        responseType: 'json',
+      },
+    );
     return response;
   }
 
@@ -386,10 +409,10 @@ export class Api {
     return response;
   }
 
-  static async removeEditor(eventId: number | string) {
+  static async removeEditor(eventId: number | string, userId: number | string) {
     try {
-      const response = await ofetch(`${API_URL}/event-years/${eventId}/remove-editor`, {
-        method: 'DELETE',
+      const response = await ofetch(`${API_URL}/event-years/${eventId}/remove-user/${userId}`, {
+        method: 'POST',
         responseType: 'json',
         headers: {
           Accept: 'application/json',

@@ -5,6 +5,7 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useRouteParams } from '@vueuse/router';
 import { PlusIcon } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
+import { RouterLink } from 'vue-router';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
 
@@ -29,26 +30,14 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Api } from '@/lib/api';
 import type { User } from '@/lib/types';
+import { useAuthStore } from '@/stores/auth';
 import { useEventStore } from '@/stores/events';
 
+const authStore = useAuthStore();
 const eventStore = useEventStore();
 const editors = ref<User[]>([]);
 
 const yearParam = useRouteParams<number>('year');
-
-onMounted(async () => {
-  if (yearParam.value) {
-    await eventStore.getEventByYear(yearParam.value);
-
-    year.value = eventStore.event?.year ?? yearParam.value;
-    title.value = eventStore.event?.title ?? '';
-    description.value = eventStore.event?.description ?? '';
-    editorId.value = eventStore.event?.editor_id ?? null;
-  }
-
-  const response = await Api.getEditors();
-  editors.value = response.data;
-});
 
 const pages = computed(() => eventStore.event?.pages ?? []);
 
@@ -90,8 +79,8 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 const removeEditor = async () => {
-  if (eventStore.event?.id) {
-    toast.promise(Api.removeEditor(eventStore.event.id), {
+  if (eventStore.event?.id && editorId.value) {
+    toast.promise(Api.removeEditor(eventStore.event.id, editorId.value), {
       loading: 'Removing editor...',
       success: async () => {
         await eventStore.getEventByYear(yearParam.value);
@@ -101,6 +90,22 @@ const removeEditor = async () => {
     });
   }
 };
+
+onMounted(async () => {
+  if (yearParam.value) {
+    await eventStore.getEventByYear(yearParam.value);
+
+    year.value = eventStore.event?.year ?? yearParam.value;
+    title.value = eventStore.event?.title ?? '';
+    description.value = eventStore.event?.description ?? '';
+    editorId.value = eventStore.event?.users?.[0]?.id ?? null;
+  }
+
+  if (authStore.user?.role === 'admin') {
+    const response = await Api.getEditors();
+    editors.value = response.data;
+  }
+});
 </script>
 
 <template>
@@ -114,6 +119,7 @@ const removeEditor = async () => {
         type="number"
         min="2000"
         max="2050"
+        :disabled="authStore.user?.role === 'editor'"
       />
 
       <p v-if="errors.year" class="text-red-500">{{ errors.year }}</p>
@@ -121,22 +127,35 @@ const removeEditor = async () => {
 
     <div class="flex flex-col gap-2">
       <Label>Title</Label>
-      <Input v-model="title" v-bind="titleAttrs" placeholder="Title" />
+      <Input
+        v-model="title"
+        v-bind="titleAttrs"
+        placeholder="Title"
+        :disabled="authStore.user?.role === 'editor'"
+      />
       <p v-if="errors.title" class="text-red-500">{{ errors.title }}</p>
     </div>
 
     <div class="flex flex-col gap-2">
       <Label>Description</Label>
-      <Textarea v-model="description" v-bind="descriptionAttrs" placeholder="Description" />
+      <Textarea
+        v-model="description"
+        v-bind="descriptionAttrs"
+        placeholder="Description"
+        :disabled="authStore.user?.role === 'editor'"
+      />
       <p v-if="errors.description" class="text-red-500">{{ errors.description }}</p>
     </div>
 
-    <div class="flex flex-col gap-2">
+    <div v-if="authStore.user?.role === 'admin'" class="flex flex-col gap-2">
       <Label>Editor</Label>
-      <div v-if="eventStore.event?.editor" class="flex items-center justify-between p-4 border rounded-lg">
+      <div
+        v-if="eventStore.event?.users?.[0]"
+        class="flex items-center justify-between p-4 border rounded-lg"
+      >
         <div class="flex items-center gap-2">
-          <span>{{ eventStore.event.editor.name }}</span>
-          <span class="text-sm text-muted-foreground">({{ eventStore.event.editor.email }})</span>
+          <span>{{ eventStore.event.users?.[0]?.name }}</span>
+          <span class="text-sm text-muted-foreground">({{ eventStore.event.users[0].email }})</span>
         </div>
         <Button variant="destructive" size="sm" @click="removeEditor">Remove</Button>
       </div>
@@ -154,22 +173,25 @@ const removeEditor = async () => {
       </div>
     </div>
 
-    <Button @click="onSubmit" :disabled="!meta.valid"> Save </Button>
+    <Button v-if="authStore.user?.role === 'admin'" @click="onSubmit" :disabled="!meta.valid">
+      Save
+    </Button>
 
     <Label>Pages</Label>
     <div v-if="eventStore.event" class="grid grid-cols-3 gap-2">
-      <div
+      <RouterLink
+        :to="{ name: 'dashboard-event-page-create' }"
         class="min-h-20 flex items-center justify-center border-2 border-gray-200 rounded-md p-2 cursor-pointer"
       >
         <PlusIcon class="w-16 h-16" />
-      </div>
+      </RouterLink>
       <Card v-for="page in pages" :key="page.id">
         <CardHeader>
           <CardTitle>{{ page.title }}</CardTitle>
           <CardDescription>{{ page.slug }}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{{ eventStore.event.description }}</p>
+          <p>{{ page.slug }}</p>
         </CardContent>
         <CardFooter class="justify-between mt-auto">
           <Button as-child>

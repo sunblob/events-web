@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 
 import HomeHeader from '@/components/HomeHeader.vue';
+import type { ConferencePage } from '@/lib/types';
 import { useEventStore } from '@/stores/events';
 
 const router = useRouter();
@@ -12,8 +13,9 @@ const eventStore = useEventStore();
 
 const { events } = storeToRefs(eventStore);
 
-const navigateToEvent = (year: number) => {
-  router.push(`/events/${year}`);
+const navigateToEvent = (year: number, pages: ConferencePage[]) => {
+  console.log(year, pages);
+  router.push({ name: 'event-detail', params: { year: year.toString() } });
 };
 
 onMounted(async () => {
@@ -31,7 +33,7 @@ onMounted(async () => {
           v-for="event in events"
           :key="event.year"
           class="border rounded-lg p-6 cursor-pointer hover:border-primary transition-colors"
-          @click="navigateToEvent(event.year)"
+          @click="navigateToEvent(event.year, event.pages!)"
         >
           <h2 class="text-xl font-semibold mb-2">{{ event.title || `Event ${event.year}` }}</h2>
           <p class="text-muted-foreground">{{ event.description }}</p>
