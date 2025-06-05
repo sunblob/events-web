@@ -32,7 +32,7 @@ onMounted(async () => {
         <div
           v-for="event in events"
           :key="event.year"
-          class="border rounded-lg p-6 cursor-pointer hover:border-primary transition-colors"
+          class="border rounded-lg p-6 bg-slate-50 dark:bg-zinc-900 cursor-pointer hover:border-primary transition-colors"
           @click="navigateToEvent(event.year, event.pages!)"
         >
           <h2 class="text-xl font-semibold mb-2">{{ event.title || `Event ${event.year}` }}</h2>

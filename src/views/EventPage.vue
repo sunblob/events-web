@@ -38,7 +38,11 @@ onMounted(async () => {
     <div v-if="page" class="flex flex-col space-y-6">
       <div>
         <h1 class="text-3xl font-bold mb-2">{{ page.title }}</h1>
-        <div v-if="page.content" v-html="page.content" class="prose dark:prose-invert max-w-none"></div>
+        <div
+          v-if="page.content"
+          v-html="page.content"
+          class="prose dark:prose-invert max-w-none"
+        ></div>
       </div>
 
       <div v-if="page.files && page.files.length > 0" class="mt-8">
@@ -49,7 +53,7 @@ onMounted(async () => {
             :key="file.id"
             :href="`${FILE_URL}/storage/${file.path}`"
             target="_blank"
-            class="flex items-center gap-2 p-4 border rounded-lg hover:border-primary transition-colors"
+            class="flex items-center gap-2 p-4 rounded-lg bg-gray-100 transition-colors"
           >
             <img
               v-if="file.mimetype.startsWith('image/')"
@@ -77,6 +81,7 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
     <div v-else class="text-center">
       <p class="text-muted-foreground">Loading...</p>
     </div>

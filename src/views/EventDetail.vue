@@ -36,7 +36,7 @@
           </div>
         </div>
 
-        <div v-if="currentPage" class="border rounded-lg p-4">
+        <div v-if="currentPage" class="p-4 rounded-lg">
           <div v-if="currentPage.content" v-html="currentPage.content"></div>
           <div class="mt-4">
             <Button as-child>
@@ -48,6 +48,7 @@
         </div>
       </div>
     </div>
+
     <div v-else class="text-center">
       <p class="text-muted-foreground">Loading...</p>
     </div>
