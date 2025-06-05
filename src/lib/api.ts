@@ -31,9 +31,13 @@ export class Api {
   }
 
   static async logout() {
-    await ofetch(`${API_URL}/logout`, {
+    await ofetch(`${API_URL}/auth/logout`, {
       method: 'POST',
       responseType: 'json',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     });
   }
 

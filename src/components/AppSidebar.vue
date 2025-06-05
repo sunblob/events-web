@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { GalleryVerticalEndIcon } from 'lucide-vue-next';
+import { GalleryVerticalEndIcon, LogOutIcon } from 'lucide-vue-next';
+import { toast } from 'vue-sonner';
 
 import {
   Sidebar,
@@ -9,10 +10,22 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useAuthStore } from '@/stores/auth';
 
 import NavMain from './NavMain.vue';
 import ToggleThemeButton from './ToggleThemeButton.vue';
+
+const authStore = useAuthStore();
+
+const handleLogout = async () => {
+  toast.promise(authStore.logout(), {
+    loading: 'Logging out...',
+    success: 'Logged out successfully',
+    error: 'Failed to logout',
+  });
+};
 </script>
 
 <template>
@@ -39,6 +52,17 @@ import ToggleThemeButton from './ToggleThemeButton.vue';
       <NavMain />
       <SidebarGroup />
     </SidebarContent>
-    <SidebarFooter> Footer </SidebarFooter>
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton as-child>
+            <div @click="handleLogout">
+              <LogOutIcon class="size-5" />
+              <span>Logout</span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
   </Sidebar>
 </template>
