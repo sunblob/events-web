@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-import { toTypedSchema } from '@vee-validate/zod';
 import { useRouteParams } from '@vueuse/router';
 import { PlusIcon } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
-import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -38,10 +35,14 @@ const authStore = useAuthStore();
 const editors = ref<User[]>([]);
 
 const { user } = storeToRefs(authStore);
-const isRedactor = computed(() => user.value?.role === 'redactor');
-const canManageEditors = computed(() => user.value?.role === 'admin');
+const canManageEditors = computed(() => user.value?.role === 'admin' || user.value?.role === 'editor');
 
 const yearParam = useRouteParams<number>('year');
+
+const year = ref(yearParam.value);
+const title = ref('');
+const description = ref('');
+const editorId = ref<number | null>(null);
 
 onMounted(async () => {
   if (yearParam.value) {
@@ -66,45 +67,25 @@ onMounted(async () => {
 
 const pages = computed(() => eventStore.event?.pages ?? []);
 
-const formSchema = toTypedSchema(
-  z.object({
-    year: z
-      .number({ required_error: 'Year is required' })
-      .min(2000, 'Year must be greater than 2000')
-      .max(2050, 'Year must be less than 2050')
-      .default(yearParam.value),
-    title: z
-      .string({ required_error: 'Title is required' })
-      .min(1, 'Title is required')
-      .default(eventStore.event?.title ?? ''),
-    description: z
-      .string({ required_error: 'Description is required' })
-      .default(eventStore.event?.description ?? ''),
-    editor_id: z.number().nullable().optional(),
-  }),
-);
-
-const { errors, handleSubmit, defineField, meta } = useForm({
-  validationSchema: formSchema,
-});
-
-const [year, yearAttrs] = defineField('year');
-const [title, titleAttrs] = defineField('title');
-const [description, descriptionAttrs] = defineField('description');
-const [editorId, editorAttrs] = defineField('editor_id');
-
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = async () => {
   if (eventStore.event?.id) {
+    const values = {
+      year: year.value,
+      title: title.value,
+      description: description.value,
+      editor_id: canManageEditors.value ? editorId.value : undefined
+    };
+
     toast.promise(eventStore.updateEvent(eventStore.event?.id, values), {
       loading: 'Updating event...',
       success: () => 'Event updated successfully',
       error: (error: Error) => error.message,
     });
   }
-});
+};
 
 const removeEditor = async () => {
-  if (!isRedactor.value && eventStore.event?.id) {
+  if (canManageEditors.value && eventStore.event?.id) {
     toast.promise(Api.removeEditor(eventStore.event.id), {
       loading: 'Removing editor...',
       success: async () => {
@@ -123,25 +104,21 @@ const removeEditor = async () => {
       <Label>Year</Label>
       <Input
         v-model="year"
-        v-bind="yearAttrs"
         placeholder="Year"
         type="number"
         min="2000"
         max="2050"
       />
-      <p v-if="errors.year" class="text-red-500">{{ errors.year }}</p>
     </div>
 
     <div class="flex flex-col gap-2">
       <Label>Title</Label>
-      <Input v-model="title" v-bind="titleAttrs" placeholder="Title" />
-      <p v-if="errors.title" class="text-red-500">{{ errors.title }}</p>
+      <Input v-model="title" placeholder="Title" />
     </div>
 
     <div class="flex flex-col gap-2">
       <Label>Description</Label>
-      <Textarea v-model="description" v-bind="descriptionAttrs" placeholder="Description" />
-      <p v-if="errors.description" class="text-red-500">{{ errors.description }}</p>
+      <Textarea v-model="description" placeholder="Description" />
     </div>
 
     <div v-if="canManageEditors" class="flex flex-col gap-2">
@@ -154,7 +131,7 @@ const removeEditor = async () => {
         <Button variant="destructive" size="sm" @click="removeEditor">Remove</Button>
       </div>
       <div v-else>
-        <Select v-model="editorId" v-bind="editorAttrs">
+        <Select v-model="editorId">
           <SelectTrigger class="w-full">
             <SelectValue placeholder="Select an editor" />
           </SelectTrigger>
@@ -167,7 +144,7 @@ const removeEditor = async () => {
       </div>
     </div>
 
-    <Button @click="onSubmit" :disabled="!meta.valid">Save</Button>
+    <Button @click="onSubmit">Save</Button>
 
     <Label>Pages</Label>
     <div v-if="eventStore.event" class="grid grid-cols-3 gap-2">
