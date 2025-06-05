@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { toTypedSchema } from '@vee-validate/zod';
 import { useRouteParams } from '@vueuse/router';
@@ -19,10 +19,20 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Api } from '@/lib/api';
+import type { User } from '@/lib/types';
 import { useEventStore } from '@/stores/events';
 
 const eventStore = useEventStore();
+const editors = ref<User[]>([]);
 
 const yearParam = useRouteParams<number>('year');
 
@@ -33,7 +43,11 @@ onMounted(async () => {
     year.value = eventStore.event?.year ?? yearParam.value;
     title.value = eventStore.event?.title ?? '';
     description.value = eventStore.event?.description ?? '';
+    editorId.value = eventStore.event?.editor_id ?? null;
   }
+
+  const response = await Api.getEditors();
+  editors.value = response.data;
 });
 
 const pages = computed(() => eventStore.event?.pages ?? []);
@@ -52,6 +66,7 @@ const formSchema = toTypedSchema(
     description: z
       .string({ required_error: 'Description is required' })
       .default(eventStore.event?.description ?? ''),
+    editor_id: z.number().nullable().optional(),
   }),
 );
 
@@ -62,6 +77,7 @@ const { errors, handleSubmit, defineField, meta } = useForm({
 const [year, yearAttrs] = defineField('year');
 const [title, titleAttrs] = defineField('title');
 const [description, descriptionAttrs] = defineField('description');
+const [editorId, editorAttrs] = defineField('editor_id');
 
 const onSubmit = handleSubmit(async (values) => {
   if (eventStore.event?.id) {
@@ -72,6 +88,19 @@ const onSubmit = handleSubmit(async (values) => {
     });
   }
 });
+
+const removeEditor = async () => {
+  if (eventStore.event?.id) {
+    toast.promise(Api.removeEditor(eventStore.event.id), {
+      loading: 'Removing editor...',
+      success: async () => {
+        await eventStore.getEventByYear(yearParam.value);
+        return 'Editor removed successfully';
+      },
+      error: (error: Error) => error.message,
+    });
+  }
+};
 </script>
 
 <template>
@@ -100,6 +129,29 @@ const onSubmit = handleSubmit(async (values) => {
       <Label>Description</Label>
       <Textarea v-model="description" v-bind="descriptionAttrs" placeholder="Description" />
       <p v-if="errors.description" class="text-red-500">{{ errors.description }}</p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <Label>Editor</Label>
+      <div v-if="eventStore.event?.editor" class="flex items-center justify-between p-4 border rounded-lg">
+        <div class="flex items-center gap-2">
+          <span>{{ eventStore.event.editor.name }}</span>
+          <span class="text-sm text-muted-foreground">({{ eventStore.event.editor.email }})</span>
+        </div>
+        <Button variant="destructive" size="sm" @click="removeEditor">Remove</Button>
+      </div>
+      <div v-else>
+        <Select v-model="editorId" v-bind="editorAttrs">
+          <SelectTrigger class="w-full">
+            <SelectValue placeholder="Select an editor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="editor in editors" :key="editor.id" :value="editor.id">
+              {{ editor.name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
 
     <Button @click="onSubmit" :disabled="!meta.valid"> Save </Button>

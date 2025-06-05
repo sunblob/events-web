@@ -373,4 +373,35 @@ export class Api {
     });
     return response;
   }
+
+  static async getEditors() {
+    const response = await ofetch<UserResponse>(`${API_URL}/users/editors`, {
+      method: 'GET',
+      responseType: 'json',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return response;
+  }
+
+  static async removeEditor(eventId: number | string) {
+    try {
+      const response = await ofetch(`${API_URL}/event-years/${eventId}/remove-editor`, {
+        method: 'DELETE',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to remove editor');
+    }
+  }
 }

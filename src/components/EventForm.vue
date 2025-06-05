@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
+
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import { useRouter } from 'vue-router';
@@ -8,11 +10,26 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Api } from '@/lib/api';
+import type { User } from '@/lib/types';
 import { useEventStore } from '@/stores/events';
 
 const eventStore = useEventStore();
 const router = useRouter();
+const editors = ref<User[]>([]);
+
+onMounted(async () => {
+  const response = await Api.getEditors();
+  editors.value = response.data;
+});
 
 const formSchema = toTypedSchema(
   z.object({
@@ -22,6 +39,7 @@ const formSchema = toTypedSchema(
       .max(2050, { message: 'Year must be less than 2050' }),
     title: z.string({ required_error: 'Title is required' }),
     description: z.string().optional(),
+    editor_id: z.number().optional(),
   }),
 );
 
@@ -32,6 +50,7 @@ const { errors, handleSubmit, defineField, meta } = useForm({
 const [year, yearAttrs] = defineField('year');
 const [title, titleAttrs] = defineField('title');
 const [description, descriptionAttrs] = defineField('description');
+const [editorId, editorAttrs] = defineField('editor_id');
 
 const onSubmit = handleSubmit(async (values) => {
   toast.promise(eventStore.createEvent(values), {
@@ -84,6 +103,23 @@ const onSubmit = handleSubmit(async (values) => {
       </div>
 
       <p v-if="errors.description" class="text-sm text-red-500">{{ errors.description }}</p>
+    </div>
+    <div v-auto-animate>
+      <div class="flex flex-col gap-2">
+        <Label for="editor">Editor</Label>
+        <Select v-model="editorId" v-bind="editorAttrs">
+          <SelectTrigger class="w-full">
+            <SelectValue placeholder="Select an editor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="editor in editors" :key="editor.id" :value="editor.id">
+              {{ editor.name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <p v-if="errors.editor_id" class="text-sm text-red-500">{{ errors.editor_id }}</p>
     </div>
     <Button type="submit" :disabled="!meta.valid">Create</Button>
   </form>
