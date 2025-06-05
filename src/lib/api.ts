@@ -223,7 +223,7 @@ export class Api {
   }
 
   static async getEventByYear(year: number) {
-    const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years/${year}`, {
+    const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years/year/${year}`, {
       method: 'GET',
       responseType: 'json',
     });
@@ -302,6 +302,63 @@ export class Api {
         throw error.data;
       }
       throw new Error('Failed to update page');
+    }
+  }
+
+  static async deleteFile(fileId: number | string) {
+    try {
+      const response = await ofetch(`${API_URL}/files/${fileId}`, {
+        method: 'DELETE',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to delete file');
+    }
+  }
+
+  static async addUserToEvent(userId: number | string, eventId: number | string) {
+    try {
+      const response = await ofetch(`${API_URL}/event-years/${eventId}/add-user/${userId}`, {
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to add user to event');
+    }
+  }
+
+  static async removeUserFromEvent(userId: number | string, eventId: number | string) {
+    try {
+      const response = await ofetch(`${API_URL}/event-years/${eventId}/remove-user/${userId}`, {
+        method: 'DELETE',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to remove user from event');
     }
   }
 }

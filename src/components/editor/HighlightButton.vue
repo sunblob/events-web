@@ -3,7 +3,6 @@ import { computed } from 'vue';
 
 import { Editor } from '@tiptap/vue-3';
 import { BanIcon, PaintbrushIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import {
   DropdownMenu,
@@ -11,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toggle } from '@/components/ui/toggle';
-import { useEditorStore } from '@/stores/editor';
 
 type HighlightOption = {
   color: string;

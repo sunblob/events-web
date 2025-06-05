@@ -3,11 +3,9 @@ import { computed, type Component } from 'vue';
 
 import { Editor } from '@tiptap/vue-3';
 import { BoldIcon, ItalicIcon, StrikethroughIcon, Code2Icon, UnderlineIcon } from 'lucide-vue-next';
-import { storeToRefs } from 'pinia';
 
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useEditorStore } from '@/stores/editor';
 
 type MarkType = 'bold' | 'italic' | 'strike' | 'code' | 'underline';
 

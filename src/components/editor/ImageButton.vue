@@ -56,7 +56,7 @@ const handleUpload = async () => {
         editor
           ?.chain()
           .focus()
-          .setImage({ src: `${FILE_URL}${data.file.url}` })
+          .setImage({ src: `${FILE_URL}${data.file.url}`, alt: data.file.original_name })
           .run();
       }
 
