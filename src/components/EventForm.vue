@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { toTypedSchema } from '@vee-validate/zod';
+import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { useRouter } from 'vue-router';
 import { toast } from 'vue-sonner';
@@ -20,15 +21,26 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Api } from '@/lib/api';
 import type { User } from '@/lib/types';
+import { useAuthStore } from '@/stores/auth';
 import { useEventStore } from '@/stores/events';
 
 const eventStore = useEventStore();
+const authStore = useAuthStore();
 const router = useRouter();
 const editors = ref<User[]>([]);
 
+const { user } = storeToRefs(authStore);
+const canManageEditors = computed(() => user.value?.role === 'admin');
+
 onMounted(async () => {
-  const response = await Api.getEditors();
-  editors.value = response.data;
+  if (canManageEditors.value) {
+    try {
+      const response = await Api.getEditors();
+      editors.value = response.data;
+    } catch (error) {
+      console.error('Failed to load editors:', error);
+    }
+  }
 });
 
 const formSchema = toTypedSchema(
@@ -104,7 +116,7 @@ const onSubmit = handleSubmit(async (values) => {
 
       <p v-if="errors.description" class="text-sm text-red-500">{{ errors.description }}</p>
     </div>
-    <div v-auto-animate>
+    <div v-if="canManageEditors" v-auto-animate>
       <div class="flex flex-col gap-2">
         <Label for="editor">Editor</Label>
         <Select v-model="editorId" v-bind="editorAttrs">

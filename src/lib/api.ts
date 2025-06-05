@@ -55,9 +55,21 @@ export class Api {
 
   static async getEvents() {
     try {
-      const response = await ofetch<ConferenceResponse>(`${API_URL}/event-years`, {
+      const user = await this.getMe();
+      const isAdmin = user.role === 'admin';
+
+      // Для админа - все ивенты, для редактора - только его
+      const url = isAdmin
+        ? `${API_URL}/event-years`
+        : `${API_URL}/event-years/editor/${user.id}/events`;
+
+      const response = await ofetch<ConferenceResponse>(url, {
         method: 'GET',
         responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
       return response;
@@ -189,6 +201,20 @@ export class Api {
 
   static async updateEvent(id: number | string, payload: Partial<ConferenceYear>) {
     try {
+      const user = await this.getMe();
+      const isAdmin = user.role === 'admin';
+
+      // Если не админ, проверяем права доступа
+      if (!isAdmin) {
+        const accessCheck = await this.checkEditorAccess(id);
+        if (!accessCheck.hasAccess) {
+          throw new Error('Access denied');
+        }
+        // Редактор не может менять поле editor
+        const { editor, editor_id, ...rest } = payload;
+        payload = rest;
+      }
+
       const response = await ofetch(`${API_URL}/event-years/${id}`, {
         method: 'PUT',
         responseType: 'json',
@@ -227,11 +253,30 @@ export class Api {
   }
 
   static async getEventByYear(year: number) {
-    const response = await ofetch<{ data: ConferenceYear }>(`${API_URL}/event-years/year/${year}`, {
-      method: 'GET',
-      responseType: 'json',
-    });
-    return response;
+    try {
+      const user = await this.getMe();
+      const isAdmin = user.role === 'admin';
+
+      // Для админа - все ивенты, для редактора - только его
+      const url = isAdmin
+        ? `${API_URL}/event-years/year/${year}`
+        : `${API_URL}/event-years/editor/${user.id}/events/year/${year}`;
+
+      const response = await ofetch<{ data: ConferenceYear }>(`${url}`, {
+        method: 'GET',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to get event');
+    }
   }
 
   static async deleteEventPage(pageId: string | number) {
@@ -330,6 +375,11 @@ export class Api {
 
   static async addUserToEvent(userId: number | string, eventId: number | string) {
     try {
+      const user = await this.getMe();
+      if (user.role === 'redactor') {
+        throw new Error('Access denied');
+      }
+
       const response = await ofetch(`${API_URL}/event-years/${eventId}/add-user/${userId}`, {
         method: 'POST',
         responseType: 'json',
@@ -349,6 +399,11 @@ export class Api {
 
   static async removeUserFromEvent(userId: number | string, eventId: number | string) {
     try {
+      const user = await this.getMe();
+      if (user.role === 'redactor') {
+        throw new Error('Access denied');
+      }
+
       const response = await ofetch(`${API_URL}/event-years/${eventId}/remove-user/${userId}`, {
         method: 'DELETE',
         responseType: 'json',
@@ -374,16 +429,28 @@ export class Api {
     return response;
   }
 
-  static async getEditors() {
-    const response = await ofetch<UserResponse>(`${API_URL}/users/editors`, {
-      method: 'GET',
-      responseType: 'json',
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    return response;
+  static async getEditors(eventId: number | string) {
+    try {
+      const user = await this.getMe();
+      if (user.role === 'redactor') {
+        throw new Error('Access denied');
+      }
+
+      const response = await ofetch<UserResponse>(`${API_URL}/users/editors`, {
+        method: 'GET',
+        responseType: 'json',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to get editors');
+    }
   }
 
   static async removeEditor(eventId: number | string) {
@@ -402,6 +469,53 @@ export class Api {
         throw error.data;
       }
       throw new Error('Failed to remove editor');
+    }
+  }
+
+  static async getRedactorEvents() {
+    const response = await ofetch<ConferenceResponse>(`${API_URL}/event-years/redactor`, {
+      method: 'GET',
+      responseType: 'json',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return response;
+  }
+
+  static async checkEditorAccess(eventId: number | string) {
+    try {
+      const user = await this.getMe();
+      const response = await ofetch<{ hasAccess: boolean }>(
+        `${API_URL}/event-years/${eventId}/check-editor/${user.id}`,
+        {
+          method: 'GET',
+          responseType: 'json',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to check access');
+    }
+  }
+
+  static async getRedactorPermissions() {
+    try {
+      const user = await this.getMe();
+      return { permissions: [user.role] };
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw error.data;
+      }
+      throw new Error('Failed to get permissions');
     }
   }
 }

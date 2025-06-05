@@ -25,7 +25,7 @@ const menuItems = [
     link: '/dashboard/events',
     icon: CalendarIcon,
     defaultOpen: false,
-    role: ['admin', 'editor'],
+    role: ['admin', 'editor', 'redactor'],
   },
 ];
 

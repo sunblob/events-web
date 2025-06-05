@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { useRouteQuery } from '@vueuse/router';
+import { storeToRefs } from 'pinia';
 import { RouterLink } from 'vue-router';
 
 import EventForm from '@/components/EventForm.vue';
@@ -23,13 +24,29 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useAuthStore } from '@/stores/auth';
 import { useEventStore } from '@/stores/events';
 
 const search = useRouteQuery('search', '');
 const eventStore = useEventStore();
+const authStore = useAuthStore();
+const loading = ref(false);
+const error = ref<string | null>(null);
+
+const { user } = storeToRefs(authStore);
+const canCreateEvent = computed(() => user.value?.role === 'admin');
 
 onMounted(async () => {
-  await eventStore.getEvents();
+  loading.value = true;
+  error.value = null;
+
+  try {
+    await eventStore.getEvents();
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Failed to load events';
+  } finally {
+    loading.value = false;
+  }
 });
 
 const filteredEvents = computed(() => {
@@ -44,7 +61,7 @@ const filteredEvents = computed(() => {
     <div class="flex items-center gap-2">
       <Input v-model="search" placeholder="Search" />
 
-      <Sheet>
+      <Sheet v-if="canCreateEvent">
         <SheetTrigger as-child>
           <Button>Create event</Button>
         </SheetTrigger>
@@ -57,8 +74,17 @@ const filteredEvents = computed(() => {
         </SheetContent>
       </Sheet>
     </div>
+
+    <div v-if="error" class="text-red-500 p-4 border rounded-lg">
+      {{ error }}
+    </div>
+
+    <div v-else-if="loading" class="text-center p-4">
+      <p>Loading events...</p>
+    </div>
+
     <div
-      v-if="filteredEvents.length > 0"
+      v-else-if="filteredEvents.length > 0"
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
     >
       <Card v-for="event in filteredEvents" :key="event.id">
@@ -75,7 +101,7 @@ const filteredEvents = computed(() => {
               Edit
             </RouterLink>
           </Button>
-          <Button variant="destructive" @click="eventStore.openDeleteEventDialog(event.id)">
+          <Button v-if="canCreateEvent" variant="destructive" @click="eventStore.openDeleteEventDialog(event.id)">
             Delete
           </Button>
         </CardFooter>

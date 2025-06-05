@@ -4,6 +4,7 @@ import { computed, onMounted, ref } from 'vue';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useRouteParams } from '@vueuse/router';
 import { PlusIcon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
@@ -29,10 +30,16 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Api } from '@/lib/api';
 import type { User } from '@/lib/types';
+import { useAuthStore } from '@/stores/auth';
 import { useEventStore } from '@/stores/events';
 
 const eventStore = useEventStore();
+const authStore = useAuthStore();
 const editors = ref<User[]>([]);
+
+const { user } = storeToRefs(authStore);
+const isRedactor = computed(() => user.value?.role === 'redactor');
+const canManageEditors = computed(() => user.value?.role === 'admin');
 
 const yearParam = useRouteParams<number>('year');
 
@@ -46,8 +53,15 @@ onMounted(async () => {
     editorId.value = eventStore.event?.editor_id ?? null;
   }
 
-  const response = await Api.getEditors();
-  editors.value = response.data;
+  // Загружаем список редакторов только если пользователь админ
+  if (canManageEditors.value) {
+    try {
+      const response = await Api.getEditors();
+      editors.value = response.data;
+    } catch (error) {
+      console.error('Failed to load editors:', error);
+    }
+  }
 });
 
 const pages = computed(() => eventStore.event?.pages ?? []);
@@ -90,7 +104,7 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 const removeEditor = async () => {
-  if (eventStore.event?.id) {
+  if (!isRedactor.value && eventStore.event?.id) {
     toast.promise(Api.removeEditor(eventStore.event.id), {
       loading: 'Removing editor...',
       success: async () => {
@@ -115,7 +129,6 @@ const removeEditor = async () => {
         min="2000"
         max="2050"
       />
-
       <p v-if="errors.year" class="text-red-500">{{ errors.year }}</p>
     </div>
 
@@ -131,7 +144,7 @@ const removeEditor = async () => {
       <p v-if="errors.description" class="text-red-500">{{ errors.description }}</p>
     </div>
 
-    <div class="flex flex-col gap-2">
+    <div v-if="canManageEditors" class="flex flex-col gap-2">
       <Label>Editor</Label>
       <div v-if="eventStore.event?.editor" class="flex items-center justify-between p-4 border rounded-lg">
         <div class="flex items-center gap-2">
@@ -154,7 +167,7 @@ const removeEditor = async () => {
       </div>
     </div>
 
-    <Button @click="onSubmit" :disabled="!meta.valid"> Save </Button>
+    <Button @click="onSubmit" :disabled="!meta.valid">Save</Button>
 
     <Label>Pages</Label>
     <div v-if="eventStore.event" class="grid grid-cols-3 gap-2">

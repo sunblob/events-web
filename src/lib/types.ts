@@ -5,15 +5,17 @@ export type LoginResponse = {
   user: User;
 };
 
-export type User = {
+export type UserRole = 'admin' | 'editor' | 'redactor';
+
+export interface User {
   id: number;
   name: string;
   email: string;
   email_verified_at: string;
   created_at: string;
   updated_at: string;
-  role: 'admin' | 'editor';
-};
+  role: UserRole;
+}
 
 export type ConferenceYear = {
   id: number;
