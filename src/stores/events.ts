@@ -9,6 +9,7 @@ import type { ConferencePage, ConferenceYear } from '@/lib/types';
 
 export const useEventStore = defineStore('events', () => {
   const events = ref<ConferenceYear[]>([]);
+  const dashboardEvents = ref<ConferenceYear[]>([]);
   const event = ref<ConferenceYear | null>(null);
   const confirmDialog = useConfirmDialog();
 
@@ -20,7 +21,7 @@ export const useEventStore = defineStore('events', () => {
 
   const getEditorEvents = async () => {
     const { data } = await Api.getEditorEvents();
-    events.value = data;
+    dashboardEvents.value = data;
   };
 
   const getEventByYear = async (year: number) => {
@@ -64,7 +65,10 @@ export const useEventStore = defineStore('events', () => {
       onConfirm: async () => {
         toast.promise(deleteEvent(yearId), {
           loading: 'Deleting event...',
-          success: 'Event deleted successfully',
+          success: async () => {
+            await getEditorEvents();
+            return 'Event deleted successfully';
+          },
           error: 'Failed to delete event',
         });
       },
@@ -108,6 +112,7 @@ export const useEventStore = defineStore('events', () => {
   return {
     events,
     event,
+    dashboardEvents,
     getEvents,
     getEditorEvents,
     getEventByYear,

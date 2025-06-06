@@ -56,9 +56,9 @@ const handleLogout = async () => {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton as-child>
-            <div @click="handleLogout">
+            <div class="flex items-center gap-2" @click="handleLogout">
               <LogOutIcon class="size-5" />
-              <span>Logout</span>
+              <span>{{ authStore.user?.email }}</span>
             </div>
           </SidebarMenuButton>
         </SidebarMenuItem>

@@ -35,7 +35,7 @@ onMounted(async () => {
 });
 
 const filteredEvents = computed(() => {
-  return eventStore.events.filter((event) =>
+  return eventStore.dashboardEvents.filter((event) =>
     event.title?.toLowerCase().includes(search.value.toLowerCase()),
   );
 });

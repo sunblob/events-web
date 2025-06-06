@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 
 import { toTypedSchema } from '@vee-validate/zod';
 import { useRouteParams } from '@vueuse/router';
@@ -101,6 +101,13 @@ onMounted(async () => {
     editorId.value = eventStore.event?.users?.[0]?.id ?? null;
   }
 
+  if (authStore.user?.role === 'admin') {
+    const response = await Api.getEditors();
+    editors.value = response.data;
+  }
+});
+
+watchEffect(async () => {
   if (authStore.user?.role === 'admin') {
     const response = await Api.getEditors();
     editors.value = response.data;
