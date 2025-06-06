@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 
 import { toTypedSchema } from '@vee-validate/zod';
 import { useRouteParams } from '@vueuse/router';
-import { PlusIcon, TrashIcon } from 'lucide-vue-next';
+import { ArrowLeftIcon, PlusIcon, TrashIcon } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
@@ -40,10 +40,6 @@ const handleFileChange = (e: Event) => {
     newFile.value = target.files[0];
   }
 };
-
-const pageFiles = computed(
-  () => page.value?.files?.filter((file) => file.is_editor_only === 0) ?? [],
-);
 
 const formSchema = toTypedSchema(
   z.object({
@@ -126,9 +122,18 @@ onMounted(async () => {
 <template>
   <div v-if="page" class="grid grid-cols-2 gap-2 mb-4">
     <div class="flex flex-col gap-2">
-      <Label>Title</Label>
-      <Input v-model="title" v-bind="titleAttrs" />
-      <Button @click="onSubmit">Save</Button>
+      <RouterLink
+        :to="`/dashboard/events`"
+        class="flex items-center gap-2"
+      >
+        <ArrowLeftIcon class="w-4 h-4" />
+        <span>Back to page</span>
+      </RouterLink>
+      <div class="flex flex-col gap-2">
+        <Label>Title</Label>
+        <Input v-model="title" v-bind="titleAttrs" />
+        <Button @click="onSubmit">Save</Button>
+      </div>
     </div>
     <div class="flex flex-col gap-2">
       <Label>Files</Label>
@@ -156,7 +161,7 @@ onMounted(async () => {
           </DialogContent>
         </Dialog>
         <div
-          v-for="file in pageFiles"
+          v-for="file in page.files"
           :key="file.id"
           class="flex flex-col gap-2 border rounded-md p-2"
         >

@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 
 import { toTypedSchema } from '@vee-validate/zod';
 import { useRouteParams } from '@vueuse/router';
-import { PlusIcon } from 'lucide-vue-next';
+import { ArrowLeftIcon,  PlusIcon } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
 import { RouterLink } from 'vue-router';
 import { toast } from 'vue-sonner';
@@ -110,6 +110,14 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col gap-4">
+    <RouterLink
+      :to="`/dashboard/events`"
+      class="flex items-center gap-2"
+    >
+      <ArrowLeftIcon class="w-4 h-4" />
+      <span>Back to events</span>
+    </RouterLink>
+
     <div class="flex flex-col gap-2">
       <Label>Year</Label>
       <Input

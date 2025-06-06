@@ -9,15 +9,19 @@ import { Api } from '@/lib/api';
 import { FILE_URL } from '@/lib/constants';
 import type { ConferencePage } from '@/lib/types';
 
+const year = useRouteParams<string>('year');
 const slug = useRouteParams<string>('slug');
 
 const page = ref<ConferencePage | null>(null);
+const loading = ref(false);
 
 watch(
   slug,
   async () => {
-    const response = await Api.getPageBySlug(slug.value);
+    loading.value = true;
+    const response = await Api.getPageByYearAndSlug(year.value, slug.value);
     page.value = response.data;
+    loading.value = false;
   },
   { immediate: true },
 );
@@ -25,7 +29,7 @@ watch(
 
 <template>
   <main class="container mx-auto py-6 px-4 md:px-0">
-    <div v-if="page" class="flex flex-col space-y-6">
+    <div v-if="page && !loading" class="flex flex-col space-y-6">
       <div>
         <div v-if="page.content" v-html="page.content" class="prose dark:prose-invert"></div>
       </div>
@@ -49,7 +53,7 @@ watch(
       </div>
     </div>
 
-    <div v-else class="text-center">
+    <div v-else-if="loading" class="text-center">
       <p class="text-muted-foreground">Loading...</p>
     </div>
   </main>
