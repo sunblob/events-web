@@ -42,9 +42,9 @@ watch(
             :key="file.id"
             :href="`${FILE_URL}/storage/${file.path}`"
             target="_blank"
-            class="flex items-center gap-2 p-4 rounded-lg bg-gray-100 transition-colors"
+            class="flex items-center gap-2 p-4 rounded-lg bg-gray-100 dark:bg-zinc-900 transition-colors"
           >
-            <div class="flex flex-col gap-2 min-w-0">
+            <div class="flex flex-col  gap-2 min-w-0">
               <span class="truncate underline">{{ file.originalName }}</span>
               <span class="text-sm text-muted-foreground">{{ file.mimetype }}</span>
             </div>
